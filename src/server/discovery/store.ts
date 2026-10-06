@@ -274,7 +274,7 @@ function incomingValue(n: NormalizedEvent, field: Tracked): unknown {
 /**
  * Applies source data to an existing event. The event's primary source may
  * change any tracked field; other sources only fill empty fields. Events
- * created inside (Nombre en proceso) (community/official) are never overwritten.
+ * created inside ORIVEXY NIGHTS (community/official) are never overwritten.
  */
 export async function applySourceUpdate(eventId: string, n: NormalizedEvent, source: SourceLite, cityName: string): Promise<{ changed: boolean }> {
   const event = await db.event.findUniqueOrThrow({

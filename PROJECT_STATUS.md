@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Producto: **(Nombre en proceso)**, antes ORIVEXY Nights; el nombre definitivo está pendiente. Es una app de descubrimiento de vida nocturna (eventos, discotecas, clubs, conciertos y festivales), empezando por Barcelona.
+Producto: **ORIVEXY NIGHTS**, antes ORIVEXY Nights; el nombre definitivo está pendiente. Es una app de descubrimiento de vida nocturna (eventos, discotecas, clubs, conciertos y festivales), empezando por Barcelona.
 
 Última revisión: 6 de octubre de 2026.
 

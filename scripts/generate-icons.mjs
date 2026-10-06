@@ -85,15 +85,15 @@ const sidebar = `<svg xmlns="http://www.w3.org/2000/svg" width="164" height="314
   ${sky}
   ${stars([[18, 22, 1], [140, 40, 0.8], [30, 150, 0.7], [150, 180, 0.9], [22, 270, 0.8], [120, 290, 0.7], [70, 30, 0.6]])}
   <svg x="22" y="70" width="120" height="120" viewBox="0 0 100 100">${markSvg()}</svg>
-  <text x="82" y="218" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="25" fill="#fff">NOMBRE</text>
-  <text x="84" y="238" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="13" letter-spacing="1.5" fill="${COLORS.volt}">EN PROCESO</text>
+  <text x="82" y="218" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="25" fill="#fff">ORIVEXY</text>
+  <text x="84" y="238" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="13" letter-spacing="5" fill="${COLORS.volt}">NIGHTS</text>
   <text x="82" y="262" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#fff" opacity="0.8">la noche empieza aquí</text>
 </svg>`;
 const headerImg = `<svg xmlns="http://www.w3.org/2000/svg" width="150" height="57" viewBox="0 0 150 57">
   ${sky}
   <svg x="6" y="4" width="49" height="49" viewBox="0 0 100 100">${markSvg({ glow: false })}</svg>
-  <text x="58" y="29" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="17" fill="#fff">NOMBRE</text>
-  <text x="59" y="45" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="9" letter-spacing="1" fill="${COLORS.volt}">EN PROCESO</text>
+  <text x="58" y="29" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="17" fill="#fff">ORIVEXY</text>
+  <text x="59" y="45" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="9" letter-spacing="3.4" fill="${COLORS.volt}">NIGHTS</text>
 </svg>`;
 writeFileSync("desktop/build/installerSidebar.bmp", await bmp(sidebar, 164, 314));
 writeFileSync("desktop/build/uninstallerSidebar.bmp", await bmp(sidebar, 164, 314));

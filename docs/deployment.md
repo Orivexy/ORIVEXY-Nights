@@ -1,6 +1,6 @@
 # Despliegue en producción
 
-Checklist y pasos para publicar (Nombre en proceso) en un servidor propio o en un PaaS.
+Checklist y pasos para publicar ORIVEXY NIGHTS en un servidor propio o en un PaaS.
 El estado real de cada servicio se ve en **/admin/settings → Servicios**.
 
 ## 1. Requisitos

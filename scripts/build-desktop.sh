@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Builds the (Nombre en proceso) desktop app (desktop/).
+# Builds the ORIVEXY NIGHTS desktop app (desktop/).
 #
-#   scripts/build-desktop.sh                     # Windows installer (cross-built on Linux) → dist-desktop/Nombre-en-proceso-Windows.exe
-#   scripts/build-desktop.sh --platform linux    # on Linux x64 → dist-desktop/Nombre-en-proceso-Linux.AppImage
-#   scripts/build-desktop.sh --platform mac      # on an Apple Silicon Mac → dist-desktop/Nombre-en-proceso-Mac.dmg
+#   scripts/build-desktop.sh                     # Windows installer (cross-built on Linux) → dist-desktop/ORIVEXY-NIGHTS-Windows.exe
+#   scripts/build-desktop.sh --platform linux    # on Linux x64 → dist-desktop/ORIVEXY-NIGHTS-Linux.AppImage
+#   scripts/build-desktop.sh --platform mac      # on an Apple Silicon Mac → dist-desktop/ORIVEXY-NIGHTS-Mac.dmg
 #   scripts/build-desktop.sh --base-data FILE    # reuse a base-data.sql (no PostgreSQL needed)
 #   scripts/build-desktop.sh --snapshot DIR      # bundle public source data (scripts/record-snapshot.mts)
 #   scripts/build-desktop.sh --resources-only [--keep-host-natives]

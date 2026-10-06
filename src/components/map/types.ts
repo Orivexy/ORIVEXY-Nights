@@ -3,10 +3,10 @@ import type { MapConfig } from "@/server/services/map";
 /**
  * MapProvider contract. Every renderer (Leaflet today; Mapbox GL, Google
  * Maps… tomorrow) implements `MapProviderProps` and is registered in
- * map-view.tsx. The rest of (Nombre en proceso) never imports a map library directly.
+ * map-view.tsx. The rest of ORIVEXY NIGHTS never imports a map library directly.
  */
 
-/** Marker style: (Nombre en proceso)'s own markers, not the provider's default pins. */
+/** Marker style: ORIVEXY NIGHTS's own markers, not the provider's default pins. */
 export type MarkerVariant = "club" | "venue" | "fiesta" | "fm" | "festival" | "concierto" | "dj" | "evento" | "otro" | string;
 
 export interface MapMarker {

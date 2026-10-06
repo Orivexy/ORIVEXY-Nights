@@ -1,6 +1,6 @@
 # Monetización (preparada, DESACTIVADA)
 
-(Nombre en proceso) funciona hoy como plataforma **gratuita**: no cobra, no pide tarjetas, no vende entradas, no crea suscripciones, no emite facturas y no muestra publicidad. El código y la base de datos están preparados para activar estas funciones más adelante sin rehacer la aplicación.
+ORIVEXY NIGHTS funciona hoy como plataforma **gratuita**: no cobra, no pide tarjetas, no vende entradas, no crea suscripciones, no emite facturas y no muestra publicidad. El código y la base de datos están preparados para activar estas funciones más adelante sin rehacer la aplicación.
 
 ## Interruptores (solo servidor)
 
@@ -23,7 +23,7 @@ Con una función desactivada, la API responde `403 FEATURE_DISABLED` con un mens
 1. Implementar `PaymentProvider` (`src/server/monetization/payments.ts`), p. ej. Stripe: `createCheckout`, `refund` y `parseWebhook` (verificando la firma).
 2. Devolverlo desde `getPaymentProvider()` y configurar sus claves en variables de entorno.
 3. Crear una regla activa en `/admin/monetization → Comisiones` (no hay porcentajes por defecto).
-4. Crear `TicketType` para el evento y poner `ticketProvider = (Nombre en proceso)`, `salesStatus = ON_SALE`.
+4. Crear `TicketType` para el evento y poner `ticketProvider = ORIVEXY NIGHTS`, `salesStatus = ON_SALE`.
 5. `MONETIZATION_ENABLED=true` y `TICKETS_ENABLED=true`.
 
 Los pagos y reembolsos **solo** cambian de estado en `POST /api/webhooks/payments/[provider]` (`applyProviderEvent`). No existe ninguna función para marcar algo como pagado o reembolsado a mano.
@@ -32,7 +32,7 @@ Los pagos y reembolsos **solo** cambian de estado en `POST /api/webhooks/payment
 
 - **Roles**: `USER`, `ORGANIZER`, `VENUE` (comerciales, sin permisos de staff), `MODERATOR`, `ADMIN`. Todas las comprobaciones pasan por `src/lib/roles.ts`.
 - **BusinessProfile**: nombre comercial, contacto, verificación, estado comercial, plan, eventos, suscripciones, promociones y operaciones (`Transaction`). `BillingProfile` guarda los datos fiscales.
-- **Event**: `pricing` (FREE/PAID), `currency`, `ticketProvider` (NONE/EXTERNAL/(Nombre en proceso)), `ticketUrl`, `capacity`, `salesStartAt/EndAt`, `refundPolicy`, `salesStatus`, `businessId`, `promotionType`.
+- **Event**: `pricing` (FREE/PAID), `currency`, `ticketProvider` (NONE/EXTERNAL/ORIVEXY NIGHTS), `ticketUrl`, `capacity`, `salesStartAt/EndAt`, `refundPolicy`, `salesStatus`, `businessId`, `promotionType`.
 - **Venta**: `TicketType` → `Order` (+ `OrderItem`) → `Payment` → `Ticket`; `Refund` (total o parcial) y `Transaction` (libro de operaciones, solo inserción).
 - **Comisiones**: `CommissionRule` en puntos básicos (100 = 1 %) por negocio o global; el cálculo está en `fees.ts` (función pura con tests).
 - **Planes**: `Plan` + `Subscription`; las funciones de cada plan en `PLAN_FEATURES`.

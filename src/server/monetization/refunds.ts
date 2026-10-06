@@ -32,7 +32,7 @@ export async function requestRefund(actorId: string, orderId: string, amount: nu
 
 /**
  * Hook for event cancellations: requests full refunds for paid orders.
- * No-op while ticketing is disabled (there are no (Nombre en proceso) orders).
+ * No-op while ticketing is disabled (there are no ORIVEXY NIGHTS orders).
  */
 export async function onEventCancelled(eventId: string, actorId: string) {
   if (!isFeatureEnabled("tickets")) return { requested: 0 };

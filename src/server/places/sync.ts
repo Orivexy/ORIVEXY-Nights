@@ -9,7 +9,7 @@ import { MISSED_SYNCS_TO_CLOSE, mayOverwrite, runLooksComplete, venueTypeFor } f
 import type { PlacePolicy, PlaceProvider, ProviderPlace } from "./types";
 
 /**
- * APIs DE PLACES → DISCOVERY → NORMALIZACIÓN → DEDUPLICACIÓN → BD (Nombre en proceso)
+ * APIs DE PLACES → DISCOVERY → NORMALIZACIÓN → DEDUPLICACIÓN → BD ORIVEXY NIGHTS
  *
  * Writes provider places into Venue rows, honouring each provider's policy:
  * providers that forbid storing content (Google) only link place IDs and
@@ -254,7 +254,7 @@ async function linkRestrictedPlace(
 
   if (!venue) {
     if (place.businessStatus === "CLOSED_PERMANENTLY") return "skipped";
-    const reasons = [`Lugar de ${opts.providerLabel} sin equivalente en (Nombre en proceso): verifica y crea el local desde una fuente con permiso de uso`];
+    const reasons = [`Lugar de ${opts.providerLabel} sin equivalente en ORIVEXY NIGHTS: verifica y crea el local desde una fuente con permiso de uso`];
     await db.sourceVenueRecord.upsert({ where: key, create: { ...key.sourceId_externalId, ...recordData, reviewStatus: "PENDING", reviewReasons: reasons }, update: recordData });
     return "queued";
   }

@@ -4,7 +4,7 @@ import { fetchJson } from "../fetcher";
 import type { Connector, ExternalEvent, ExternalVenue, SourceDateTime } from "../types";
 
 /**
- * (Nombre en proceso) partner feed (JSON) — the format clubs and promoters can publish for
+ * ORIVEXY NIGHTS partner feed (JSON) — the format clubs and promoters can publish for
  * us. Documented in docs/event-discovery.md. Invalid items are skipped.
  */
 const place = z.object({ name: z.string().max(120).optional(), address: z.string().max(200).optional(), lat: z.number().optional(), lng: z.number().optional() });
@@ -55,12 +55,12 @@ function dateTime(v: string | undefined, tz: string): SourceDateTime | null {
 async function loadFeed(url: string | null) {
   if (!url) throw new Error("La fuente necesita la URL del feed");
   const parsed = feedSchema.safeParse(await fetchJson<unknown>(url));
-  if (!parsed.success) throw new Error("El feed no cumple el formato (Nombre en proceso) v1");
+  if (!parsed.success) throw new Error("El feed no cumple el formato ORIVEXY NIGHTS v1");
   return parsed.data;
 }
 
 export const partnerFeedConnector: Connector = {
-  label: "Feed de partner (Nombre en proceso) (JSON)",
+  label: "Feed de partner ORIVEXY NIGHTS (JSON)",
   async fetchEvents(ctx) {
     const feed = await loadFeed(ctx.url);
     const out: ExternalEvent[] = [];

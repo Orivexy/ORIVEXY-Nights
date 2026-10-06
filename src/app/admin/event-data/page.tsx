@@ -15,7 +15,7 @@ export default async function EventDataPage() {
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-bold">Event Data</h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted">Fuentes de eventos → normalización → deduplicación → eventos (Nombre en proceso) → mapa, Descubrir y feed. Solo se muestran eventos vigentes o futuros.</p>
+          <p className="mt-1 max-w-2xl text-sm text-muted">Fuentes de eventos → normalización → deduplicación → eventos ORIVEXY NIGHTS → mapa, Descubrir y feed. Solo se muestran eventos vigentes o futuros.</p>
         </div>
         <Link href="/admin/discovery/review" className="inline-flex h-10 items-center rounded-full bg-volt px-5 text-sm font-bold text-on-volt">
           Revisión pendiente · {t.pendingReview}

@@ -1,7 +1,7 @@
 /**
  * Base data. Run with `npm run db:seed` (also after `prisma migrate deploy`
  * in production). Idempotent and non-destructive: it only upserts
- * configuration — never content. (Nombre en proceso)'s venues and events come from the
+ * configuration — never content. ORIVEXY NIGHTS's venues and events come from the
  * configured sources (VENUE_SYNC / EVENT_SYNC) and from its users.
  *
  *  - countries, cities, categories and music genres (src/config)
@@ -34,7 +34,7 @@ const XCEED_PAGE_VENUES: Record<string, string> = {
 };
 
 async function main() {
-  console.log("🌙 (Nombre en proceso) · datos base");
+  console.log("🌙 ORIVEXY NIGHTS · datos base");
 
   for (const c of COUNTRIES) await db.country.upsert({ where: { code: c.code }, create: c, update: { name: c.name, currency: c.currency } });
   const countries = new Map((await db.country.findMany()).map((c) => [c.code, c.id]));

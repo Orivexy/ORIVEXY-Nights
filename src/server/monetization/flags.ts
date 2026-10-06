@@ -41,7 +41,7 @@ export const monetizationFlags: Record<MonetizationFeature, boolean> & { master:
 /** Documentation for the admin panel (which env var controls what). */
 export const FLAG_DOCS: Array<{ feature: MonetizationFeature | "master"; env: string; label: string; description: string }> = [
   { feature: "master", env: "MONETIZATION_ENABLED", label: "Monetización (interruptor general)", description: "Sin él, ninguna función de pago se activa aunque su flag esté a true." },
-  { feature: "tickets", env: "TICKETS_ENABLED", label: "Venta de entradas", description: "Tipos de entrada, pedidos, pagos y reembolsos dentro de (Nombre en proceso)." },
+  { feature: "tickets", env: "TICKETS_ENABLED", label: "Venta de entradas", description: "Tipos de entrada, pedidos, pagos y reembolsos dentro de ORIVEXY NIGHTS." },
   { feature: "premium", env: "PREMIUM_VENUES_ENABLED", label: "Perfiles premium", description: "Planes PLAN_PREMIUM / PLAN_BUSINESS para locales y organizadores." },
   { feature: "subscriptions", env: "SUBSCRIPTIONS_ENABLED", label: "Suscripciones", description: "Cobro recurrente de planes a negocios." },
   { feature: "sponsored", env: "SPONSORED_CONTENT_ENABLED", label: "Contenido patrocinado", description: "Eventos, locales y publicaciones promocionados (siempre etiquetados)." },
@@ -50,7 +50,7 @@ export const FLAG_DOCS: Array<{ feature: MonetizationFeature | "master"; env: st
 ];
 
 const DISABLED_MESSAGE: Record<MonetizationFeature, string> = {
-  tickets: "La venta de entradas en (Nombre en proceso) todavía no está disponible. Puedes indicar el precio y un enlace de venta externo.",
+  tickets: "La venta de entradas en ORIVEXY NIGHTS todavía no está disponible. Puedes indicar el precio y un enlace de venta externo.",
   premium: "Los planes premium todavía no están disponibles.",
   subscriptions: "Las suscripciones todavía no están disponibles.",
   ads: "La publicidad todavía no está disponible.",

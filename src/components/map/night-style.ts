@@ -1,6 +1,6 @@
 /**
  * Turns a public OpenMapTiles vector style (OpenFreeMap "liberty": no key,
- * no limits, © OpenStreetMap) into (Nombre en proceso)'s night look, close to the
+ * no limits, © OpenStreetMap) into ORIVEXY NIGHTS's night look, close to the
  * dark mode of Apple Maps: charcoal land, deep-blue water, soft grey roads,
  * 3D buildings and no third-party POI icons (our own markers stand out).
  * Pure function: works on any OpenMapTiles-schema style.

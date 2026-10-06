@@ -1,4 +1,4 @@
-// (Nombre en proceso) logo mark: a neon crescent moon (the night) with equalizer bars
+// ORIVEXY NIGHTS logo mark: a neon crescent moon (the night) with equalizer bars
 // rising from it (the party). Plain SVG strings shared by the icon generator
 // and the desktop splash (the web header uses public/icons/logo-mark.svg).
 

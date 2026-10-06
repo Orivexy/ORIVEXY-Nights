@@ -1,9 +1,9 @@
 {
-  "name": "nombre-en-proceso-desktop",
-  "productName": "Nombre en proceso",
+  "name": "orivexy-nights-desktop",
+  "productName": "ORIVEXY NIGHTS",
   "version": "0.1.0",
-  "description": "(Nombre en proceso) para Windows, Linux y Mac: app completa con servidor y base de datos incluidos.",
-  "author": "(Nombre en proceso)",
+  "description": "ORIVEXY NIGHTS para Windows, Linux y Mac: app completa con servidor y base de datos incluidos.",
+  "author": "ORIVEXY NIGHTS",
   "private": true,
   "type": "module",
   "main": "main.mjs",
@@ -22,8 +22,8 @@
   },
   "build": {
     "appId": "app.nivex.desktop",
-    "productName": "Nombre en proceso",
-    "copyright": "(Nombre en proceso)",
+    "productName": "ORIVEXY NIGHTS",
+    "copyright": "ORIVEXY NIGHTS",
     "directories": {
       "output": "../dist-desktop",
       "buildResources": "build"
@@ -78,8 +78,8 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "(Nombre en proceso)",
-      "artifactName": "Nombre-en-proceso-Windows.${ext}",
+      "shortcutName": "ORIVEXY NIGHTS",
+      "artifactName": "ORIVEXY-NIGHTS-Windows.${ext}",
       "deleteAppDataOnUninstall": false,
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
@@ -106,7 +106,7 @@
       "icon": "build/icon.png",
       "category": "Network",
       "synopsis": "Fiestas, discotecas y eventos cerca de ti",
-      "artifactName": "Nombre-en-proceso-Linux.${ext}",
+      "artifactName": "ORIVEXY-NIGHTS-Linux.${ext}",
       "files": [
         "!node_modules/@embedded-postgres/windows-*/**",
         "!node_modules/@embedded-postgres/darwin-*/**"
@@ -126,15 +126,15 @@
       "identity": "-",
       "hardenedRuntime": false,
       "gatekeeperAssess": false,
-      "artifactName": "Nombre-en-proceso-Mac.${ext}",
+      "artifactName": "ORIVEXY-NIGHTS-Mac.${ext}",
       "files": [
         "!node_modules/@embedded-postgres/windows-*/**",
         "!node_modules/@embedded-postgres/linux-*/**"
       ]
     },
     "dmg": {
-      "title": "(Nombre en proceso)",
-      "artifactName": "Nombre-en-proceso-Mac.${ext}"
+      "title": "ORIVEXY NIGHTS",
+      "artifactName": "ORIVEXY-NIGHTS-Mac.${ext}"
     }
   }
 }

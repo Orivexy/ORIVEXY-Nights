@@ -63,7 +63,7 @@ export default async function VenuePage({ params }: Props) {
     listPosts({ venueId: venue.id, viewerId: user?.id, limit: 9 }),
   ]);
   const status = openingStatus(venue.openingHours, venue.timezone);
-  const TRUST_LABEL: Record<string, string> = { COMMUNITY: "Comunidad", IMPORTED: "Importado", OFFICIAL: "Oficial", VERIFIED: "Verificado por (Nombre en proceso)" };
+  const TRUST_LABEL: Record<string, string> = { COMMUNITY: "Comunidad", IMPORTED: "Importado", OFFICIAL: "Oficial", VERIFIED: "Verificado por ORIVEXY NIGHTS" };
   const official = events.items.filter((e) => e.venue?.id === venue.id);
   // The venue's own price, else the cheapest published price of its upcoming events (never guessed).
   const eventPrices = events.items.map((e) => e.priceMin).filter((p): p is number => p != null);

@@ -77,7 +77,7 @@ describe("iCalendar", () => {
     expect(events[3]!.start).toMatchObject({ kind: "local", time: null });
     expect(events[3]!.description).toBeNull();
   });
-  it("normalizes to (Nombre en proceso) format without inventing a price", () => {
+  it("normalizes to ORIVEXY NIGHTS format without inventing a price", () => {
     const r = normalizeEvent(events[0]!, TZ);
     expect(r.ok).toBe(true);
     if (!r.ok) return;

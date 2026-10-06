@@ -10,7 +10,7 @@ import type { BusinessStatus, NightlifeCategory, PlaceProvider, ProviderPlace } 
  * Google Maps Platform terms (Places): only the place ID may be stored
  * indefinitely; latitude/longitude may be cached for up to 30 days; other
  * content (name, address, hours, rating, photos…) may not be stored, and
- * Places content may not be shown on a non-Google map. (Nombre en proceso)'s map is not a
+ * Places content may not be shown on a non-Google map. ORIVEXY NIGHTS's map is not a
  * Google map, so this provider is used only to *link* places: it adds the
  * place ID to venues we already know and flags permanent closures. Its
  * policy below makes the sync enforce that.

@@ -1,6 +1,6 @@
 import type { MapMarker } from "./types";
 
-/** (Nombre en proceso) markers and clusters as HTML, shared by every renderer. */
+/** ORIVEXY NIGHTS markers and clusters as HTML, shared by every renderer. */
 const GLYPH: Record<string, string> = { fm: "🎪", fiesta: "🎉", festival: "🎡", concierto: "🎤", dj: "🎧", discoteca: "🪩", evento: "✨", otro: "✨" };
 export const isPlace = (v: string) => v === "club" || v === "venue";
 

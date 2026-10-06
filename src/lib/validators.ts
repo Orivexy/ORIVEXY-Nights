@@ -102,7 +102,7 @@ export const eventInputSchema = z
     /**
      * NONE / EXTERNAL: informative price + optional external ticket link.
      * PLATFORM: native ticket sales — rejected while TICKETS_ENABLED is off.
-     * Prices of (Nombre en proceso) tickets always come from TicketType rows, never from here.
+     * Prices of ORIVEXY NIGHTS tickets always come from TicketType rows, never from here.
      */
     ticketing: z.enum(["NONE", "EXTERNAL", "PLATFORM"]).optional(),
     capacity: z.number().int().min(1).max(100_000).optional().nullable(),

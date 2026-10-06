@@ -1,6 +1,6 @@
 # Event Discovery
 
-Sistema automático para descubrir eventos y locales (inicialmente Barcelona) y convertirlos al formato de (Nombre en proceso).
+Sistema automático para descubrir eventos y locales (inicialmente Barcelona) y convertirlos al formato de ORIVEXY NIGHTS.
 
 ```
 FUENTES → DISCOVERY ENGINE → NORMALIZACIÓN → DEDUPLICACIÓN → VALIDACIÓN → BASE DE DATOS → FRONTEND
@@ -11,7 +11,7 @@ Código: `src/server/discovery/` · Panel: `/admin/discovery`.
 ## Reglas
 
 - Solo **APIs oficiales, feeds públicos y datos estructurados** que las propias webs publican (schema.org). Nada de scraping de buscadores, CAPTCHAs, logins, paywalls ni reintentos ante bloqueos (403/429 → error y espera).
-- Las webs se leen respetando `robots.txt`, con User-Agent propio (`NombreenprocesoBot/1.0`), una petición por host cada 1,5 s, tiempo y tamaño máximos, y bloqueo de IPs privadas (SSRF).
+- Las webs se leen respetando `robots.txt`, con User-Agent propio (`OrivexyNightsBot/1.0`), una petición por host cada 1,5 s, tiempo y tamaño máximos, y bloqueo de IPs privadas (SSRF).
 - **No se inventan datos**: si falta el precio, la hora o el lugar, queda vacío o el evento va a revisión.
 - Los usuarios nunca provocan consultas externas: todo se sincroniza en segundo plano y se sirve desde la base de datos.
 
@@ -71,7 +71,7 @@ Puntuación con título (sin palabras genéricas ni el nombre del local), local 
 
 ## Actualizaciones
 
-La **fuente principal** de un evento puede cambiar cualquier campo; las demás solo rellenan huecos. Una fuente `OFFICIAL` pasa a ser la principal de un evento importado. Los eventos creados dentro de (Nombre en proceso) nunca se sobrescriben. Cada cambio queda en `EventChange` (campo, antes, después, fuente, fecha). Si la fuente deja de listar un evento en dos sincronizaciones correctas, se oculta (`INACTIVE`); nunca si la fuente devuelve 0 resultados de golpe.
+La **fuente principal** de un evento puede cambiar cualquier campo; las demás solo rellenan huecos. Una fuente `OFFICIAL` pasa a ser la principal de un evento importado. Los eventos creados dentro de ORIVEXY NIGHTS nunca se sobrescriben. Cada cambio queda en `EventChange` (campo, antes, después, fuente, fecha). Si la fuente deja de listar un evento en dos sincronizaciones correctas, se oculta (`INACTIVE`); nunca si la fuente devuelve 0 resultados de golpe.
 
 ## Verificación
 

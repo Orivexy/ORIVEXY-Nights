@@ -4,7 +4,7 @@ import { assertFeature } from "./flags";
 
 /**
  * Invoicing provider abstraction (e.g. a certified e-invoicing service).
- * Invoices stay DRAFT with no number until a provider issues them; (Nombre en proceso)
+ * Invoices stay DRAFT with no number until a provider issues them; ORIVEXY NIGHTS
  * never generates legal invoice numbers by itself.
  */
 export interface InvoicingProvider {

@@ -9,7 +9,7 @@ import { cn } from "@/lib/cn";
  * Source of the mark: scripts/logo.mjs → public/icons/logo-mark.svg
  */
 export function Logo({ className }: { className?: string }) {
-  // A provisional name "(Nombre en proceso)" is shown as "Nombre / en proceso", like a real wordmark.
+  // A provisional name "ORIVEXY NIGHTS" is shown as "Nombre / en proceso", like a real wordmark.
   const [first, ...rest] = site.name.replace(/^\((.*)\)$/, "$1").split(" ");
   return (
     <Link href="/" className={cn("group inline-flex shrink-0 items-center gap-1.5 font-display text-[19px] font-bold tracking-tight", className)} aria-label={`${site.name} — inicio`}>

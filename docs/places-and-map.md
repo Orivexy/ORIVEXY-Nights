@@ -1,15 +1,15 @@
 # Locales, horarios, eventos y mapa
 
-Cómo (Nombre en proceso) obtiene y mantiene al día discotecas, salas, horarios, ubicaciones y eventos de Barcelona (y de cualquier ciudad que se añada), y cómo los muestra en el mapa.
+Cómo ORIVEXY NIGHTS obtiene y mantiene al día discotecas, salas, horarios, ubicaciones y eventos de Barcelona (y de cualquier ciudad que se añada), y cómo los muestra en el mapa.
 
 ```
-APIs DE PLACES ─→ VENUE_SYNC ─→ normalización ─→ deduplicación ─→ BD (Nombre en proceso) (Venue + horarios) ─→ mapa · perfiles · búsqueda
-FUENTES EVENTOS ─→ EVENT_SYNC ─→ normalización ─→ deduplicación ─→ BD (Nombre en proceso) (Event → Venue) ─→ mapa · Descubrir · feed
+APIs DE PLACES ─→ VENUE_SYNC ─→ normalización ─→ deduplicación ─→ BD ORIVEXY NIGHTS (Venue + horarios) ─→ mapa · perfiles · búsqueda
+FUENTES EVENTOS ─→ EVENT_SYNC ─→ normalización ─→ deduplicación ─→ BD ORIVEXY NIGHTS (Event → Venue) ─→ mapa · Descubrir · feed
 ```
 
-**Las páginas nunca llaman a APIs externas.** Todo lo que ve el usuario sale de la base de datos de (Nombre en proceso). Las APIs se consultan solo desde los jobs en segundo plano. Si una API está caída, sin cuota o sin clave, el job registra el error y reintenta más tarde con backoff, y la app sigue mostrando los datos guardados.
+**Las páginas nunca llaman a APIs externas.** Todo lo que ve el usuario sale de la base de datos de ORIVEXY NIGHTS. Las APIs se consultan solo desde los jobs en segundo plano. Si una API está caída, sin cuota o sin clave, el job registra el error y reintenta más tarde con backoff, y la app sigue mostrando los datos guardados.
 
-## API keys: qué necesita (Nombre en proceso) y dónde se configuran
+## API keys: qué necesita ORIVEXY NIGHTS y dónde se configuran
 
 Todas son variables de entorno **del servidor** (`.env` en local, o variables del hosting en producción). Ninguna lleva el prefijo `NEXT_PUBLIC_`, ninguna llega al navegador y no se suben a GitHub (`.env` está en `.gitignore`; `.env.example` solo tiene valores vacíos).
 
@@ -25,15 +25,15 @@ Límites y costes (también en `.env.example`): `OVERPASS_DAILY_LIMIT` (200), `G
 
 ## Proveedores de lugares (`src/server/places`)
 
-`PlaceProvider` es la única interfaz que conoce (Nombre en proceso) (`types.ts`): `discover(área, categorías)`, `refresh(ids)` y una **política de uso** con las condiciones del proveedor. Para cambiar o añadir un proveedor (Foursquare, un partner, etc.) basta con implementar la interfaz, registrarla en `places/index.ts` y crear su conector en `discovery/connectors`. El resto de (Nombre en proceso) no cambia.
+`PlaceProvider` es la única interfaz que conoce ORIVEXY NIGHTS (`types.ts`): `discover(área, categorías)`, `refresh(ids)` y una **política de uso** con las condiciones del proveedor. Para cambiar o añadir un proveedor (Foursquare, un partner, etc.) basta con implementar la interfaz, registrarla en `places/index.ts` y crear su conector en `discovery/connectors`. El resto de ORIVEXY NIGHTS no cambia.
 
 ### OpenStreetMap (Overpass API): fuente principal
 
-- Datos © OpenStreetMap contributors, licencia **ODbL**: se pueden guardar y mostrar en cualquier mapa, siempre con atribución. (Nombre en proceso) la muestra en el perfil del local, en la tarjeta del mapa y en el propio mapa.
+- Datos © OpenStreetMap contributors, licencia **ODbL**: se pueden guardar y mostrar en cualquier mapa, siempre con atribución. ORIVEXY NIGHTS la muestra en el perfil del local, en la tarjeta del mapa y en el propio mapa.
 - Busca `amenity=nightclub`, `leisure=dance`, `amenity=music_venue`, bares con `live_music=yes` y `amenity=events_venue` alrededor del centro de la ciudad (`radiusKm`).
 - Guarda: nombre, dirección (solo de las etiquetas `addr:*`; si no hay calle queda **vacía** y se muestra “Dirección no disponible”), barrio, coordenadas, teléfono, web, Instagram, categorías, horarios (`opening_hours`) y el id del objeto OSM como `sourceUrl`.
-- OSM no tiene valoraciones ni fotos: quedan vacías. La valoración que ve el usuario es siempre la de las reseñas de (Nombre en proceso).
-- Uso justo de la instancia pública: unas 10 000 peticiones y 1 GB al día. (Nombre en proceso) hace muy pocas, con un tope configurable.
+- OSM no tiene valoraciones ni fotos: quedan vacías. La valoración que ve el usuario es siempre la de las reseñas de ORIVEXY NIGHTS.
+- Uso justo de la instancia pública: unas 10 000 peticiones y 1 GB al día. ORIVEXY NIGHTS hace muy pocas, con un tope configurable.
 - Si la instancia principal está saturada (429/504), se prueba cada espejo público de `OVERPASS_MIRRORS`, en orden.
 
 ### Google Places API (New): solo para vincular
@@ -41,14 +41,14 @@ Límites y costes (también en `.env.example`): `OVERPASS_DAILY_LIMIT` (200), `G
 Se evaluó como fuente principal, pero **sus condiciones no lo permiten**:
 
 - Solo el **place ID** se puede guardar indefinidamente. La latitud/longitud, como máximo 30 días. El resto (nombre, dirección, horarios, valoración, fotos…) no se puede guardar.
-- El contenido de Places **no se puede mostrar sobre un mapa que no sea de Google**, y el mapa de (Nombre en proceso) no lo es.
+- El contenido de Places **no se puede mostrar sobre un mapa que no sea de Google**, y el mapa de ORIVEXY NIGHTS no lo es.
 
-Por eso, (Nombre en proceso) usa Google solo para:
+Por eso, ORIVEXY NIGHTS usa Google solo para:
 
 - añadir el `googlePlaceId` a locales que ya existen;
 - detectar cierres definitivos (`CLOSED_PERMANENTLY`).
 
-El nombre se compara en memoria y se descarta. Las coordenadas del registro caducan a los 30 días (`purgeExpiredSourceData`). Un lugar de Google sin equivalente en (Nombre en proceso) queda en revisión con un enlace a Google Maps, y el admin no permite crearlo con datos de Google.
+El nombre se compara en memoria y se descarta. Las coordenadas del registro caducan a los 30 días (`purgeExpiredSourceData`). Un lugar de Google sin equivalente en ORIVEXY NIGHTS queda en revisión con un enlace a Google Maps, y el admin no permite crearlo con datos de Google.
 
 La máscara de campos (`id, displayName, location, businessStatus`) se factura como *Text Search Pro*. Valoración y horarios serían *Enterprise*, y no se piden. No se hace scraping de Google en ningún caso.
 
@@ -121,8 +121,8 @@ Se trabaja con fechas locales concretas, así que los cambios de hora se calcula
   - Lista y mapa salen del mismo cálculo (`lib/map-filters.ts`), así que siempre coinciden.
 - **Búsqueda.** El buscador del mapa y la búsqueda global entienden intenciones (`lib/search-intent.ts`): “fiesta hoy”, “techno”, “clubs cerca de mí”, “gratis este finde”, “Barcelona” o el nombre de un local.
 - **Ubicación.** Solo se pide cuando el usuario pulsa “mi ubicación”, activa “Más cerca primero” o busca “cerca de mí”. Es aproximada (sin alta precisión) y se guarda en la sesión del navegador. Sirve para las distancias (“450 m”, “1,2 km”) y para ordenar por cercanía.
-- **Cómo llegar.** Abre la app de mapas del dispositivo: Apple Maps en iPhone/Mac, `geo:` en Android y Google Maps en la web. (Nombre en proceso) no hace navegación propia.
-- **Tarjeta inferior.** Imagen, nombre, valoración (Nombre en proceso), distancia, estado (abierto/cierra/abre), géneros, próximo evento con precio, y los botones Ver perfil, Cómo llegar y Eventos, además de la atribución de la fuente.
+- **Cómo llegar.** Abre la app de mapas del dispositivo: Apple Maps en iPhone/Mac, `geo:` en Android y Google Maps en la web. ORIVEXY NIGHTS no hace navegación propia.
+- **Tarjeta inferior.** Imagen, nombre, valoración ORIVEXY NIGHTS, distancia, estado (abierto/cierra/abre), géneros, próximo evento con precio, y los botones Ver perfil, Cómo llegar y Eventos, además de la atribución de la fuente.
 
 ## Admin
 

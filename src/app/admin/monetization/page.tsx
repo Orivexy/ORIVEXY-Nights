@@ -21,7 +21,7 @@ export default async function MonetizationPage() {
       <header>
         <h1 className="font-display text-2xl font-bold">Monetización</h1>
         <p className="mt-1 max-w-2xl text-sm text-muted">
-          (Nombre en proceso) funciona como plataforma gratuita. Las funciones de pago están preparadas pero desactivadas: no se cobra, no se venden entradas, no hay suscripciones ni anuncios.
+          ORIVEXY NIGHTS funciona como plataforma gratuita. Las funciones de pago están preparadas pero desactivadas: no se cobra, no se venden entradas, no hay suscripciones ni anuncios.
         </p>
       </header>
 
@@ -51,7 +51,7 @@ export default async function MonetizationPage() {
           ["Eventos de pago (info)", stats.paidEvents],
           ["Pedidos", `${stats.orders} (${stats.paid} pagados)`],
           ["Volumen", formatMoney(stats.grossCents)],
-          ["Comisión (Nombre en proceso)", formatMoney(stats.platformFeeCents)],
+          ["Comisión ORIVEXY NIGHTS", formatMoney(stats.platformFeeCents)],
           ["Suscripciones activas", stats.activeSubs],
           ["Promociones activas", stats.activePromos],
           ["Reembolsos pendientes", stats.pendingRefunds],
@@ -75,7 +75,7 @@ export default async function MonetizationPage() {
               <div className="min-w-0 flex-1">
                 <p className="font-semibold">{r.name} <span className="text-[12px] font-normal text-muted">· {r.business?.tradeName ?? "Global"}</span></p>
                 <p className="text-[13px] text-muted">
-                  (Nombre en proceso) {pct(r.platformFeeBps)} + {formatMoney(r.platformFeeFixed, r.currency)} · Proveedor {pct(r.providerFeeBps)} + {formatMoney(r.providerFeeFixed, r.currency)} · Impuesto {pct(r.taxRateBps)} {r.taxIncluded ? "incluido" : "aparte"} · Comisión a cargo del {r.feesPaidByBuyer ? "comprador" : "organizador"}
+                  ORIVEXY NIGHTS {pct(r.platformFeeBps)} + {formatMoney(r.platformFeeFixed, r.currency)} · Proveedor {pct(r.providerFeeBps)} + {formatMoney(r.providerFeeFixed, r.currency)} · Impuesto {pct(r.taxRateBps)} {r.taxIncluded ? "incluido" : "aparte"} · Comisión a cargo del {r.feesPaidByBuyer ? "comprador" : "organizador"}
                 </p>
               </div>
               <span className={cn("text-[12px] font-bold", r.isActive ? "text-volt" : "text-faint")}>{r.isActive ? "ACTIVA" : "INACTIVA"}</span>
@@ -108,7 +108,7 @@ export default async function MonetizationPage() {
 
       <section className="space-y-3">
         <h2 className="font-display text-lg font-semibold">Eventos de pago</h2>
-        <p className="text-[13px] text-muted">Precio informativo y, en su caso, enlace de venta externo. Ninguno vende entradas en (Nombre en proceso).</p>
+        <p className="text-[13px] text-muted">Precio informativo y, en su caso, enlace de venta externo. Ninguno vende entradas en ORIVEXY NIGHTS.</p>
         <div className="divide-y divide-line rounded-2xl border border-line bg-surface">
           {paidEvents.map((e) => (
             <div key={e.id} className="flex flex-wrap items-center gap-3 p-3 text-sm">

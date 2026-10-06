@@ -39,7 +39,7 @@ export async function createOrder(user: SessionUser & { email: string }, input: 
     select: { id: true, title: true, status: true, ticketProvider: true, salesStatus: true, salesStartAt: true, salesEndAt: true, businessId: true },
   });
   if (!event || event.status !== "PUBLISHED") throw notFound("Evento no encontrado");
-  if (event.ticketProvider !== "PLATFORM" || event.salesStatus !== "ON_SALE") throw badRequest("Este evento no vende entradas en (Nombre en proceso)");
+  if (event.ticketProvider !== "PLATFORM" || event.salesStatus !== "ON_SALE") throw badRequest("Este evento no vende entradas en ORIVEXY NIGHTS");
   if ((event.salesStartAt && event.salesStartAt > now) || (event.salesEndAt && event.salesEndAt < now)) throw badRequest("La venta no está abierta");
 
   const ids = [...new Set(input.items.map((i) => i.ticketTypeId))];

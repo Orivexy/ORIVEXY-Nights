@@ -1,5 +1,5 @@
 /**
- * (Nombre en proceso) desktop backend: embedded PostgreSQL + the Next.js standalone server.
+ * ORIVEXY NIGHTS desktop backend: embedded PostgreSQL + the Next.js standalone server.
  * Plain Node (no Electron APIs) so it can be tested on any OS:
  *   node backend.mjs <resourcesDir> <dataDir>
  */
@@ -256,7 +256,7 @@ function startServer({ resourcesDir, dataDir, nodeBinary, nodeEnv, port, databas
     RATE_LIMIT_SCALE: "20",
     NEXT_TELEMETRY_DISABLED: "1",
   };
-  log(`Arrancando (Nombre en proceso) en el puerto ${port}`);
+  log(`Arrancando ORIVEXY NIGHTS en el puerto ${port}`);
   const child = spawn(nodeBinary, [path.join(appDir, "server.js")], { cwd: appDir, env, windowsHide: true });
   let alive = true;
   // The server's last output goes in the error message, so the dialog shows why it stopped.
@@ -312,7 +312,7 @@ export async function startBackend(opts) {
   state.dbPassword ??= randomBytes(18).toString("hex");
   state.cronSecret ??= randomBytes(24).toString("hex");
   // Administrator of this installation: generated here, kept only on this computer.
-  state.admin ??= { email: "admin@nombre-en-proceso.local", password: readablePassword() };
+  state.admin ??= { email: "admin@orivexy.local", password: readablePassword() };
   const saveState = () => writeFileSync(stateFile, JSON.stringify(state, null, 2));
   saveState(); // before initdb: the cluster's password must never get lost
 

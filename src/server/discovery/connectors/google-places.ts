@@ -4,7 +4,7 @@ import type { Connector } from "../types";
 
 /**
  * Google Places (New). Its terms only allow keeping place IDs (and
- * coordinates for 30 days), so this source links IDs to venues (Nombre en proceso) already
+ * coordinates for 30 days), so this source links IDs to venues ORIVEXY NIGHTS already
  * knows and flags permanent closures — see src/server/places/providers/google.ts.
  * config: { categories?: NightlifeCategory[], maxPages?: number, radiusKm?: number }
  */

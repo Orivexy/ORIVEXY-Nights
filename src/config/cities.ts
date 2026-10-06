@@ -1,5 +1,5 @@
 /**
- * (Nombre en proceso) covers Barcelona. Adding a city = add it here and run the
+ * ORIVEXY NIGHTS covers Barcelona. Adding a city = add it here and run the
  * seed (or insert a City row). Everything else is scoped by cityId.
  */
 export const COUNTRIES = [{ code: "ES", name: "España", currency: "EUR" }] as const;

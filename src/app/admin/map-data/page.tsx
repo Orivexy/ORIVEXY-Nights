@@ -18,7 +18,7 @@ export default async function MapDataPage() {
       <header>
         <h1 className="font-display text-2xl font-bold">Map Data</h1>
         <p className="mt-1 max-w-2xl text-sm text-muted">
-          APIs de lugares → descubrimiento → normalización → deduplicación → base de datos (Nombre en proceso) → mapa. El mapa y las páginas leen solo de la base de datos; las APIs se consultan en segundo plano.
+          APIs de lugares → descubrimiento → normalización → deduplicación → base de datos ORIVEXY NIGHTS → mapa. El mapa y las páginas leen solo de la base de datos; las APIs se consultan en segundo plano.
         </p>
       </header>
 
@@ -68,7 +68,7 @@ export default async function MapDataPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-[12px] text-faint">Contadores de (Nombre en proceso). La facturación real está en la consola de cada proveedor; el nivel gratuito no se descuenta aquí.</p>
+        <p className="text-[12px] text-faint">Contadores de ORIVEXY NIGHTS. La facturación real está en la consola de cada proveedor; el nivel gratuito no se descuenta aquí.</p>
       </section>
 
       {o.flags.length > 0 && (

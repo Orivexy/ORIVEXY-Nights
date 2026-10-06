@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Starts (Nombre en proceso) for the end-to-end tests against an ISOLATED database that is
+# Starts ORIVEXY NIGHTS for the end-to-end tests against an ISOLATED database that is
 # recreated on every run (never the development or production database):
 # schema migrations → base seed (+ test admin) → test fixtures → `next start`.
 # Requires a previous `npm run build`.

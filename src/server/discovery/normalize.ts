@@ -1,5 +1,5 @@
 /**
- * Turns connector output into (Nombre en proceso)'s uniform format. Pure functions — no
+ * Turns connector output into ORIVEXY NIGHTS's uniform format. Pure functions — no
  * database, no network — so every rule is unit-tested.
  *
  * Principles: never invent data (unknown stays null), always resolve times

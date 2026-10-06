@@ -14,7 +14,7 @@ export const metadata = { title: "Event Discovery" };
 const TYPE_OPTIONS = [
   { value: "ICS_FEED", label: "Calendario iCal (.ics)" },
   { value: "JSON_LD_PAGE", label: "Web oficial (schema.org)" },
-  { value: "PARTNER_FEED", label: "Feed de partner (Nombre en proceso) (JSON)" },
+  { value: "PARTNER_FEED", label: "Feed de partner ORIVEXY NIGHTS (JSON)" },
   { value: "TICKETMASTER", label: "Ticketmaster Discovery API" },
   { value: "OSM_OVERPASS", label: "OpenStreetMap · Overpass (locales y horarios)" },
   { value: "MADRID_AGENDA", label: "Datos abiertos de Madrid (agenda de ocio)" },
@@ -34,7 +34,7 @@ export default async function DiscoveryPage() {
         <div>
           <h1 className="font-display text-2xl font-bold">Event Discovery</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted">
-            Fuentes → normalización → deduplicación → validación → (Nombre en proceso). Solo APIs, feeds y datos publicados por las propias webs (respetando robots.txt). Intervalo por defecto: {o.defaultInterval}.
+            Fuentes → normalización → deduplicación → validación → ORIVEXY NIGHTS. Solo APIs, feeds y datos publicados por las propias webs (respetando robots.txt). Intervalo por defecto: {o.defaultInterval}.
             {!o.engineEnabled && <span className="text-warn"> El motor está desactivado (DISCOVERY_ENABLED=false).</span>}
           </p>
         </div>
@@ -102,7 +102,7 @@ export default async function DiscoveryPage() {
                   <span className="ml-2 text-muted">última: {src.lastSyncAt ? timeAgo(src.lastSyncAt) : "nunca"}</span>
                   <span className="ml-2 text-muted">{src.eventsFound} encontrados · {src._count.eventRecords} registros</span>
                 </p>
-                {src.needsKey && <p className="text-[12px] text-warn">Empezará sola cuando configures su clave de API (variables de entorno o, en la app de escritorio, menú (Nombre en proceso) → Claves de API…).</p>}
+                {src.needsKey && <p className="text-[12px] text-warn">Empezará sola cuando configures su clave de API (variables de entorno o, en la app de escritorio, menú ORIVEXY NIGHTS → Claves de API…).</p>}
                 {src.lastError && <p className="text-[12px] text-danger">{src.lastError}</p>}
               </div>
               {admin && (

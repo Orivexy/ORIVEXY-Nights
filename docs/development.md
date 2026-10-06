@@ -1,4 +1,4 @@
-# Desarrollo de (Nombre en proceso)
+# Desarrollo de ORIVEXY NIGHTS
 
 Guía técnica (el README del repositorio es solo para descargar la app).
 
@@ -33,7 +33,7 @@ npm run db:seed               # datos base (idempotente): ciudades, categorías,
 npm run dev                   # http://localhost:3000
 ```
 
-(Nombre en proceso) no trae contenido de ejemplo: **no hay usuarios, locales ni eventos
+ORIVEXY NIGHTS no trae contenido de ejemplo: **no hay usuarios, locales ni eventos
 inventados**. El seed solo crea la configuración base y, si defines
 `ADMIN_EMAIL` + `ADMIN_PASSWORD`, la cuenta de administrador.
 

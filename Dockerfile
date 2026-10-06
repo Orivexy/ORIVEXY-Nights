@@ -1,4 +1,4 @@
-# (Nombre en proceso) production image.
+# ORIVEXY NIGHTS production image.
 #   docker build -t app .
 # The `builder` stage also runs database migrations + the base seed
 # (see docker-compose.yml → service "migrate").

@@ -1,4 +1,4 @@
-# (Nombre en proceso) — instalador para Windows sin la ventana de SmartScreen.
+# ORIVEXY NIGHTS — instalador para Windows sin la ventana de SmartScreen.
 #
 #   irm https://github.com/Orivexy/ORIVEXY-Nights/releases/latest/download/install.ps1 | iex
 #
@@ -11,11 +11,11 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue' # la barra de progreso hace lentísima la descarga en PowerShell 5
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$url = 'https://github.com/Orivexy/ORIVEXY-Nights/releases/latest/download/Nombre-en-proceso-Windows.exe'
-$setup = Join-Path $env:TEMP 'Nombre-en-proceso-Setup.exe'
+$url = 'https://github.com/Orivexy/ORIVEXY-Nights/releases/latest/download/ORIVEXY-NIGHTS-Windows.exe'
+$setup = Join-Path $env:TEMP 'ORIVEXY-NIGHTS-Setup.exe'
 
 Write-Host ''
-Write-Host '  (Nombre en proceso)' -ForegroundColor Magenta
+Write-Host '  ORIVEXY NIGHTS' -ForegroundColor Magenta
 if ($env:APP_INSTALLER) {
   Copy-Item -LiteralPath $env:APP_INSTALLER -Destination $setup -Force
 } else {
@@ -32,16 +32,16 @@ if ($p.ExitCode -ne 0) { throw "La instalacion no se completo (codigo $($p.ExitC
 
 # Dónde quedó instalada (instalaciones nuevas o actualizaciones de NIVEX).
 $candidates = @(
-  (Join-Path $env:ProgramFiles 'Nombre en proceso\Nombre en proceso.exe'),
-  (Join-Path $env:ProgramFiles 'ORIVEXY NIGHTS\Nombre en proceso.exe'),
   (Join-Path $env:ProgramFiles 'ORIVEXY NIGHTS\ORIVEXY NIGHTS.exe'),
+  (Join-Path $env:ProgramFiles 'Nombre en proceso\ORIVEXY NIGHTS.exe'),
+  (Join-Path $env:ProgramFiles 'Nombre en proceso\Nombre en proceso.exe'),
   (Join-Path $env:ProgramFiles 'NIVEX\ORIVEXY NIGHTS.exe')
 )
 $key = Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall', 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall' -ErrorAction SilentlyContinue |
-  Get-ItemProperty -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like '(Nombre en proceso)*' } | Select-Object -First 1
-if ($key -and $key.InstallLocation) { $candidates = @((Join-Path $key.InstallLocation 'Nombre en proceso.exe'), (Join-Path $key.InstallLocation 'ORIVEXY NIGHTS.exe')) + $candidates }
+  Get-ItemProperty -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like 'ORIVEXY NIGHTS*' -or $_.DisplayName -like 'Nombre en proceso*' } | Select-Object -First 1
+if ($key -and $key.InstallLocation) { $candidates = @((Join-Path $key.InstallLocation 'ORIVEXY NIGHTS.exe'), (Join-Path $key.InstallLocation 'Nombre en proceso.exe')) + $candidates }
 $exe = $candidates | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
-if (-not $exe) { throw 'No se encontro (Nombre en proceso) despues de instalar.' }
+if (-not $exe) { throw 'No se encontro ORIVEXY NIGHTS despues de instalar.' }
 
-Write-Host '  Listo. Abriendo (Nombre en proceso)...' -ForegroundColor Green
+Write-Host '  Listo. Abriendo ORIVEXY NIGHTS...' -ForegroundColor Green
 if (-not $env:APP_NO_LAUNCH) { Start-Process -FilePath $exe }

@@ -15,7 +15,7 @@ export interface OverpassElement {
   tags?: Record<string, string>;
 }
 
-/** OSM tags selected for each (Nombre en proceso) category. */
+/** OSM tags selected for each ORIVEXY NIGHTS category. */
 export const OSM_FILTERS: Record<NightlifeCategory, string[]> = {
   nightclub: ['["amenity"="nightclub"]'],
   dance_club: ['["leisure"="dance"]["dance:teaching"!="yes"]'],

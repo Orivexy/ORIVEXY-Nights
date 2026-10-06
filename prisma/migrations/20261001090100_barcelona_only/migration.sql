@@ -1,4 +1,4 @@
--- (Nombre en proceso) covers Barcelona only: other cities are hidden and their
+-- ORIVEXY NIGHTS covers Barcelona only: other cities are hidden and their
 -- sources paused (nothing is deleted; an admin can reactivate them).
 UPDATE "City" SET "isActive" = false WHERE "slug" <> 'barcelona';
 UPDATE "DiscoverySource" SET "enabled" = false WHERE "cityId" IN (SELECT "id" FROM "City" WHERE "slug" <> 'barcelona');

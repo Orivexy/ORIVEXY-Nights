@@ -90,7 +90,7 @@ export function CommissionRuleForm({ rule, trigger }: { rule?: RuleValues; trigg
         <form onSubmit={save} className="space-y-4 pb-4">
           <Field label="Nombre"><Input value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} required /></Field>
           <div className="grid grid-cols-2 gap-3">
-            {num("platformPct", "Comisión (Nombre en proceso)", "%")}
+            {num("platformPct", "Comisión ORIVEXY NIGHTS", "%")}
             {num("platformFixed", "Fijo por entrada", "€")}
             {num("providerPct", "Proveedor de pago", "%")}
             {num("providerFixed", "Fijo por pedido", "€")}

@@ -8,7 +8,7 @@ import { buildDiscoveryQuery, buildRefreshQuery, parseOverpass, type OverpassEle
 /**
  * OpenStreetMap via the Overpass API. No key needed; ODbL lets us store the
  * data and show it on any map with attribution. The public instance asks for
- * fair use (roughly < 10 000 requests and < 1 GB per day): (Nombre en proceso) makes a
+ * fair use (roughly < 10 000 requests and < 1 GB per day): ORIVEXY NIGHTS makes a
  * handful of requests per day, capped by OVERPASS_DAILY_LIMIT.
  */
 type OverpassResponse = { elements?: OverpassElement[]; remark?: string };

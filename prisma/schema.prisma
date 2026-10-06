@@ -351,7 +351,7 @@ enum EventPricing {
   PAID
 }
 
-/// How tickets are sold. PLATFORM = native ticketing in (Nombre en proceso) (requires TICKETS_ENABLED).
+/// How tickets are sold. PLATFORM = native ticketing in ORIVEXY NIGHTS (requires TICKETS_ENABLED).
 enum TicketProvider {
   NONE
   EXTERNAL

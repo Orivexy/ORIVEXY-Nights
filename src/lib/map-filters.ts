@@ -185,7 +185,7 @@ export function activeFilterCount(f: MapFilters): number {
 
 /**
  * "Cómo llegar": hands off to the device's maps app (Apple Maps on Apple
- * devices, the geo: chooser on Android, Google Maps on the web). (Nombre en proceso) never
+ * devices, the geo: chooser on Android, Google Maps on the web). ORIVEXY NIGHTS never
  * does turn-by-turn navigation itself.
  */
 export function directionsUrl(to: LatLng & { name?: string }, userAgent = ""): string {

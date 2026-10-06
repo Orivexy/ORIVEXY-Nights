@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 /**
- * End-to-end tests. By default they start (Nombre en proceso) (`scripts/e2e-server.sh`)
+ * End-to-end tests. By default they start ORIVEXY NIGHTS (`scripts/e2e-server.sh`)
  * on port 3100 against an isolated, freshly recreated database (app_e2e)
  * with only base data + a few fixtures; tests create everything else through
  * the real UI and API. Run `npm run build` first.

@@ -1,6 +1,6 @@
 name: Desktop apps
 
-# Builds (Nombre en proceso) for Windows (.exe), Linux (.AppImage) and macOS (.dmg)
+# Builds ORIVEXY NIGHTS for Windows (.exe), Linux (.AppImage) and macOS (.dmg)
 # — Electron + embedded PostgreSQL + schema and base data — and publishes them
 # together as one GitHub Release. Pushes to the default branch (and v* tags)
 # become the "latest" release, which the download buttons in the README use.
@@ -103,8 +103,8 @@ jobs:
         with:
           name: app-windows
           path: |
-            dist-desktop/Nombre-en-proceso-Windows.exe
-            dist-desktop/Nombre-en-proceso-Windows.exe.blockmap
+            dist-desktop/ORIVEXY-NIGHTS-Windows.exe
+            dist-desktop/ORIVEXY-NIGHTS-Windows.exe.blockmap
             dist-desktop/latest.yml
 
   linux:
@@ -131,7 +131,7 @@ jobs:
       - name: Smoke test the packaged app
         run: |
           sudo apt-get install -y -qq xvfb >/dev/null
-          xvfb-run -a dist-desktop/linux-unpacked/nombre-en-proceso-desktop --no-sandbox > app.log 2>&1 &
+          xvfb-run -a dist-desktop/linux-unpacked/orivexy-nights-desktop --no-sandbox > app.log 2>&1 &
           for i in $(seq 1 120); do
             if curl -sf http://localhost:3000/api/health; then echo " app started"; break; fi
             [ "$i" = 120 ] && { cat app.log; find ~/.config -name "registro.log" -exec tail -50 {} \; ; exit 1; }
@@ -160,7 +160,7 @@ jobs:
         with:
           name: app-linux
           path: |
-            dist-desktop/Nombre-en-proceso-Linux.AppImage
+            dist-desktop/ORIVEXY-NIGHTS-Linux.AppImage
             dist-desktop/latest-linux.yml
             dist-desktop/screenshots/*.png
 
@@ -186,7 +186,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: app-mac
-          path: dist-desktop/Nombre-en-proceso-Mac.dmg
+          path: dist-desktop/ORIVEXY-NIGHTS-Mac.dmg
 
   # Installs the new .exe on a real Windows machine with the one-line
   # installer (silent, no SmartScreen) and checks the app starts.
@@ -201,7 +201,7 @@ jobs:
       - name: Install with scripts/install-windows.ps1
         shell: powershell
         env:
-          APP_INSTALLER: dist/Nombre-en-proceso-Windows.exe
+          APP_INSTALLER: dist/ORIVEXY-NIGHTS-Windows.exe
           APP_NO_LAUNCH: "1"
         run: |
           $env:APP_INSTALLER = (Resolve-Path $env:APP_INSTALLER).Path
@@ -209,10 +209,10 @@ jobs:
       - name: The installed app starts
         shell: powershell
         run: |
-          $exe = Join-Path $env:ProgramFiles 'Nombre en proceso\Nombre en proceso.exe'
+          $exe = Join-Path $env:ProgramFiles 'ORIVEXY NIGHTS\ORIVEXY NIGHTS.exe'
           if (-not (Test-Path $exe)) { Get-ChildItem $env:ProgramFiles; throw "No instalado en $exe" }
           function Show-Log { Get-ChildItem -Recurse -Filter 'registro.log' $env:APPDATA, $env:ProgramData -ErrorAction SilentlyContinue | ForEach-Object { Get-Content $_.FullName -Tail 120 } }
-          function Stop-App { Get-Process | Where-Object { $_.Path -like "$env:ProgramFiles\Nombre en proceso\*" -or $_.ProcessName -like 'postgres*' } | Stop-Process -Force -ErrorAction SilentlyContinue; Start-Sleep -Seconds 3 }
+          function Stop-App { Get-Process | Where-Object { $_.Path -like "$env:ProgramFiles\ORIVEXY NIGHTS\*" -or $_.ProcessName -like 'postgres*' } | Stop-Process -Force -ErrorAction SilentlyContinue; Start-Sleep -Seconds 3 }
           function Start-AndWait([string]$label, [int]$limit) {
             $sw = [Diagnostics.Stopwatch]::StartNew()
             # Own output files: the app must not keep the step's console pipes open.
@@ -232,7 +232,7 @@ jobs:
           }
           Start-AndWait 'first launch' 240
           # With bundled data, the map must show clubs on first launch.
-          if (Test-Path "$env:ProgramFiles\Nombre en proceso\resources\snapshot") {
+          if (Test-Path "$env:ProgramFiles\ORIVEXY NIGHTS\resources\snapshot") {
             $n = 0
             for ($i = 0; $i -lt 90 -and $n -eq 0; $i++) {
               try { $n = @((Invoke-RestMethod -Uri 'http://127.0.0.1:3000/api/map/places' -TimeoutSec 30).places).Count } catch {}
@@ -261,23 +261,23 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('desktop-v{0}-{1}', steps.v.outputs.version, github.run_number) }}
-          name: "(Nombre en proceso) ${{ steps.v.outputs.version }} (build ${{ github.run_number }})"
+          name: "ORIVEXY NIGHTS ${{ steps.v.outputs.version }} (build ${{ github.run_number }})"
           # Builds of the repository's default branch (and v* tags) are the "latest" release.
           prerelease: ${{ github.ref_name != github.event.repository.default_branch && !startsWith(github.ref, 'refs/tags/') }}
           make_latest: ${{ github.ref_name == github.event.repository.default_branch || startsWith(github.ref, 'refs/tags/') }}
           target_commitish: ${{ github.sha }}
           files: |
-            dist/Nombre-en-proceso-Windows.exe
-            dist/Nombre-en-proceso-Linux.AppImage
-            dist/Nombre-en-proceso-Mac.dmg
+            dist/ORIVEXY-NIGHTS-Windows.exe
+            dist/ORIVEXY-NIGHTS-Linux.AppImage
+            dist/ORIVEXY-NIGHTS-Mac.dmg
             dist/install.ps1
             dist/screenshots/screenshot-*.png
             dist/latest.yml
             dist/latest-linux.yml
-            dist/Nombre-en-proceso-Windows.exe.blockmap
+            dist/ORIVEXY-NIGHTS-Windows.exe.blockmap
           body: |
-            ## Descargar (Nombre en proceso)
+            ## Descargar ORIVEXY NIGHTS
 
             Elige tu sistema en **Assets** (abajo): **Windows** (`.exe`), **Mac** (`.dmg`) o **Linux** (`.AppImage`). Ábrelo y listo.
 
-            ![(Nombre en proceso)](https://github.com/Orivexy/ORIVEXY-Nights/releases/download/${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('desktop-v{0}-{1}', steps.v.outputs.version, github.run_number) }}/screenshot-home.png)
+            ![ORIVEXY NIGHTS](https://github.com/Orivexy/ORIVEXY-Nights/releases/download/${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('desktop-v{0}-{1}', steps.v.outputs.version, github.run_number) }}/screenshot-home.png)

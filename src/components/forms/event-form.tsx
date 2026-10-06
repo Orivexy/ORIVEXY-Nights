@@ -262,7 +262,7 @@ export function EventForm({ mode, eventId, citySlug, cityName, venues, mapConfig
         </div>
         {!v.isFree && (
           <p className="text-[12px] text-faint">
-            La venta de entradas dentro de (Nombre en proceso) todavía no está disponible. Indica el precio y, si quieres, un enlace de venta externo.
+            La venta de entradas dentro de ORIVEXY NIGHTS todavía no está disponible. Indica el precio y, si quieres, un enlace de venta externo.
           </p>
         )}
       </Field>

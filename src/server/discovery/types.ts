@@ -1,7 +1,7 @@
 /**
  * Shapes used by the discovery pipeline. Connectors return External* items
  * (as close to the source as possible); normalize.ts turns them into
- * Normalized* items in (Nombre en proceso)'s format. Nothing here is invented: missing
+ * Normalized* items in ORIVEXY NIGHTS's format. Nothing here is invented: missing
  * data stays null.
  */
 import type { DiscoverySource } from "@prisma/client";
