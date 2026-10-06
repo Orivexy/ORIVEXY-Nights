@@ -25,16 +25,26 @@ function readablePassword() {
   return `Noche-${chars.slice(0, 4).join("")}-${chars.slice(4, 8).join("")}-${chars.slice(8, 12).join("")}`;
 }
 
-function freePort(start) {
+/** Can we listen on this port and host? (A missing IPv6 stack counts as free.) */
+function canListen(port, host) {
   return new Promise((resolve) => {
-    const tryPort = (port) => {
-      const srv = createServer();
-      srv.once("error", () => tryPort(port + 1));
-      srv.once("listening", () => srv.close(() => resolve(port)));
-      srv.listen(port, "0.0.0.0");
-    };
-    tryPort(start);
+    const srv = createServer();
+    srv.once("error", (err) => resolve(err.code === "EADDRNOTAVAIL" || err.code === "EAFNOSUPPORT"));
+    srv.once("listening", () => srv.close(() => resolve(true)));
+    srv.listen(port, host);
   });
+}
+
+/**
+ * First port free on every local address. Another app (e.g. a dev server)
+ * may listen on 127.0.0.1 or ::1 only: binding 0.0.0.0 would still succeed
+ * and "localhost" would then open that other app.
+ */
+async function freePort(start) {
+  for (let port = start; port < start + 200; port++) {
+    if ((await canListen(port, "0.0.0.0")) && (await canListen(port, "127.0.0.1")) && (await canListen(port, "::1"))) return port;
+  }
+  throw new Error("No hay ningún puerto libre para arrancar");
 }
 
 /** Local network addresses so phones on the same Wi-Fi can open the app. */
@@ -45,13 +55,14 @@ export function lanAddresses() {
     .map((i) => i.address);
 }
 
-async function waitForHttp(url, timeoutMs, isAlive) {
+async function waitForHttp(url, timeoutMs, isAlive, instanceId) {
   const until = Date.now() + timeoutMs;
   while (Date.now() < until) {
     if (!isAlive()) throw new Error("El servidor se ha detenido al arrancar (ver registro.log)");
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
-      if (res.status < 500) return;
+      // Our own server answers with this launch's id; anything else is another app on the port.
+      if (res.ok && (await res.json().catch(() => null))?.instance === instanceId) return;
     } catch {
       /* not ready yet */
     }
@@ -225,6 +236,7 @@ export function writeApiKeys(dataDir, values) {
 
 function startServer({ resourcesDir, dataDir, nodeBinary, nodeEnv, port, databaseUrl, storageDir, cronSecret, admin, logFile, log }) {
   const appDir = path.join(resourcesDir, "server");
+  const instanceId = randomUUID();
   const bin = (name) => {
     const p = path.join(resourcesDir, "bin", process.platform === "win32" ? `${name}.exe` : name);
     return existsSync(p) ? p : "";
@@ -255,6 +267,7 @@ function startServer({ resourcesDir, dataDir, nodeBinary, nodeEnv, port, databas
     EVENT_MODERATION: "off",
     RATE_LIMIT_SCALE: "20",
     NEXT_TELEMETRY_DISABLED: "1",
+    APP_INSTANCE_ID: instanceId,
   };
   log(`Arrancando ORIVEXY NIGHTS en el puerto ${port}`);
   const child = spawn(nodeBinary, [path.join(appDir, "server.js")], { cwd: appDir, env, windowsHide: true });
@@ -269,7 +282,7 @@ function startServer({ resourcesDir, dataDir, nodeBinary, nodeEnv, port, databas
     log(`Servidor detenido (código ${code})`);
   });
   // /api/health answers without touching the database.
-  const ready = waitForHttp(`http://localhost:${port}/api/health`, 90_000, () => alive).catch((err) => {
+  const ready = waitForHttp(`http://localhost:${port}/api/health`, 90_000, () => alive, instanceId).catch((err) => {
     throw new Error(recent.trim() ? `${err.message}\n\n${recent.trim()}` : err.message);
   });
   return { ready, alive: () => alive, kill: () => child.kill() };
