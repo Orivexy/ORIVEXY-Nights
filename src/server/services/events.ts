@@ -1,4 +1,5 @@
 import "server-only";
+import { setEventArtists } from "./artists";
 import type { EventStatus, Prisma, VenueType } from "@prisma/client";
 import { randomBytes } from "node:crypto";
 import { db } from "../db";
@@ -161,6 +162,7 @@ export async function getEventDetail(slug: string, viewer: SessionUser | null): 
       sourceRecords: { where: { eventId: { not: null } }, select: { sourceUrl: true, source: { select: { name: true } } } },
       city: { select: { slug: true, name: true, timezone: true, country: { select: { currency: true } } } },
       photos: { where: { status: "VISIBLE" }, select: photoSelect, orderBy: [{ position: "asc" }, { createdAt: "desc" }], take: 12 },
+      artists: { orderBy: { position: "asc" }, select: { artist: { select: { id: true, slug: true, name: true } } } },
     },
   });
   if (!e) return null;
@@ -191,6 +193,7 @@ export async function getEventDetail(slug: string, viewer: SessionUser | null): 
     attendeesPreview: attendees,
     viewer: states.get(e.id) ?? { attendance: null, saved: false },
     canEdit: canEditEvent(viewer, e.organizerId),
+    artists: e.artists.map((a) => a.artist),
   };
 }
 
@@ -312,7 +315,7 @@ export async function createEvent(user: SessionUser, input: EventInput) {
   const businessId = await businessForOrganizer(user.id, r.venue?.id ?? null);
   // Verified organizers/venues publish official events without the review queue.
   const official = r.isVenueManager || Boolean(businessId);
-  const status: EventStatus = !official && (await needsModeration(user, account.createdAt)) ? "PENDING" : "PUBLISHED";
+  const status: EventStatus = input.draft ? "DRAFT" : !official && (await needsModeration(user, account.createdAt)) ? "PENDING" : "PUBLISHED";
 
   const event = await db.$transaction(async (tx) => {
     const created = await tx.event.create({
@@ -342,11 +345,12 @@ export async function createEvent(user: SessionUser, input: EventInput) {
         source: r.isVenueManager ? "VENUE" : "USER",
         trust: official ? "OFFICIAL" : "COMMUNITY",
         businessId,
-        searchText: buildSearchText(input.title, input.locationName, r.venue?.name, r.venue?.neighborhood, input.address, r.city.name),
+        searchText: buildSearchText(input.title, input.locationName, r.venue?.name, r.venue?.neighborhood, input.address, r.city.name, input.artists.join(" ")),
         genres: { create: r.genreIds.map((genreId) => ({ genreId })) },
       },
       select: { id: true, slug: true, status: true, venueId: true },
     });
+    await setEventArtists(tx, created.id, input.artists);
     if (r.photoIds.length) {
       await Promise.all(
         r.photoIds.map((id, position) => tx.photo.update({ where: { id }, data: { eventId: created.id, position } })),
@@ -392,16 +396,31 @@ export async function updateEvent(user: SessionUser, eventId: string, input: Eve
         // Edits to rejected events go back to review.
         ...(existing.status === "REJECTED" ? { status: "PENDING" as const } : {}),
         reminderSentAt: null,
-        searchText: buildSearchText(input.title, input.locationName, r.venue?.name, r.venue?.neighborhood, input.address, r.city.name),
+        searchText: buildSearchText(input.title, input.locationName, r.venue?.name, r.venue?.neighborhood, input.address, r.city.name, input.artists.join(" ")),
         genres: { create: r.genreIds.map((genreId) => ({ genreId })) },
       },
       select: { id: true, slug: true, status: true },
     });
+    await setEventArtists(tx, eventId, input.artists);
     await Promise.all(
       r.photoIds.map((id, position) => tx.photo.update({ where: { id }, data: { eventId, position } })),
     );
     return updated;
   });
+}
+
+/** Sends a draft to publication: published or to review, with the same rules as a new event. */
+export async function submitEvent(user: SessionUser, eventId: string) {
+  const e = await db.event.findUnique({ where: { id: eventId }, select: { organizerId: true, status: true, venueId: true, businessId: true, trust: true } });
+  if (!e) throw notFound("Evento no encontrado");
+  if (!canEditEvent(user, e.organizerId)) throw forbidden();
+  if (e.status !== "DRAFT") throw badRequest("Este evento ya se ha enviado");
+  const account = await db.user.findUniqueOrThrow({ where: { id: user.id }, select: { createdAt: true } });
+  const official = e.trust === "OFFICIAL";
+  const status: EventStatus = !official && (await needsModeration(user, account.createdAt)) ? "PENDING" : "PUBLISHED";
+  const updated = await db.event.update({ where: { id: eventId }, data: { status }, select: { id: true, slug: true, status: true } });
+  if (status === "PUBLISHED") await notifyVenueFollowers(eventId, e.venueId, user.id);
+  return updated;
 }
 
 export async function cancelEvent(user: SessionUser, eventId: string) {
@@ -412,18 +431,19 @@ export async function cancelEvent(user: SessionUser, eventId: string) {
   await onEventCancelled(eventId, user.id);
 }
 
+/** A new published event: tells the followers of its venue and of its artists (once each). */
 export async function notifyVenueFollowers(eventId: string, venueId: string | null, actorId: string) {
-  if (!venueId) return;
-  const followers = await db.venueFollow.findMany({ where: { venueId }, select: { userId: true }, take: 5000 });
-  await notifyMany(
-    followers.map((f) => ({
-      userId: f.userId,
-      actorId,
-      type: "VENUE_NEW_EVENT" as const,
-      eventId,
-      dedupeKey: `venue_event:${eventId}:${f.userId}`,
-    })),
-  );
+  const [venueFollowers, artistFollowers] = await Promise.all([
+    venueId ? db.venueFollow.findMany({ where: { venueId }, select: { userId: true }, take: 5000 }) : [],
+    db.artistFollow.findMany({ where: { artist: { events: { some: { eventId } } } }, select: { userId: true }, take: 5000 }),
+  ]);
+  const byVenue = new Set(venueFollowers.map((f) => f.userId));
+  await notifyMany([
+    ...[...byVenue].map((userId) => ({ userId, actorId, type: "VENUE_NEW_EVENT" as const, eventId, dedupeKey: `venue_event:${eventId}:${userId}` })),
+    ...[...new Set(artistFollowers.map((f) => f.userId))]
+      .filter((userId) => !byVenue.has(userId))
+      .map((userId) => ({ userId, actorId, type: "ARTIST_NEW_EVENT" as const, eventId, dedupeKey: `artist_event:${eventId}:${userId}` })),
+  ]);
 }
 
 async function assertAttendable(eventId: string) {

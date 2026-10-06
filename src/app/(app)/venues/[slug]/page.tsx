@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { env } from "@/server/env";
+import { jsonLd, venueJsonLd } from "@/lib/structured-data";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AtSign, Clock, ExternalLink, MapPin, Music2, ShieldCheck, Wallet } from "lucide-react";
@@ -34,9 +36,16 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const v = await getVenueDetail(slug, null);
-  if (!v) return { title: "Local" };
+  if (!v) return { title: "Local", robots: { index: false } };
   const img = imageUrl(v.coverKey, "lg");
-  return { title: v.name, description: v.description ?? undefined, openGraph: img ? { images: [img] } : undefined };
+  const description = v.description ?? `${v.name}${v.neighborhood ? ` · ${v.neighborhood}` : ""}: próximos eventos, fotos y cómo llegar.`;
+  return {
+    title: v.name,
+    description,
+    alternates: { canonical: `/venues/${v.slug}` },
+    openGraph: { title: v.name, description, url: `/venues/${v.slug}`, images: img ? [img] : undefined },
+    twitter: { card: img ? "summary_large_image" : "summary", title: v.name, description, images: img ? [img] : undefined },
+  };
 }
 
 export default async function VenuePage({ params }: Props) {
@@ -73,6 +82,7 @@ export default async function VenuePage({ params }: Props) {
 
   return (
     <article className="mx-auto max-w-6xl md:px-6 md:pt-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(venueJsonLd(venue, env.APP_URL)) }} />
       <div className="relative md:overflow-hidden md:rounded-[1.75rem]">
         <Cover imageKey={venue.coverKey} art="club" alt={venue.name} sizes="(min-width: 768px) 1100px, 100vw" priority className="aspect-[4/3] w-full md:aspect-[21/8]" />
         <div className="image-fade absolute inset-0" />

@@ -4,6 +4,8 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, Loader2 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
+import { Chip } from "@/components/ui/misc";
+import { GENRES } from "@/config/taxonomy";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { useToast } from "@/components/providers/toast-provider";
@@ -11,7 +13,7 @@ import { useUpload, type UploadedImage } from "@/hooks/use-upload";
 import { api, ApiClientError } from "@/lib/api-client";
 
 interface Props {
-  initial: { username: string; displayName: string; bio: string; avatarKey: string | null; citySlug: string };
+  initial: { username: string; displayName: string; bio: string; avatarKey: string | null; citySlug: string; favoriteGenres: string[] };
   cities: Array<{ slug: string; name: string }>;
   email: string;
 }
@@ -51,6 +53,7 @@ export function ProfileForm({ initial, cities, email }: Props) {
         displayName: v.displayName,
         bio: v.bio.trim() || null,
         citySlug: v.citySlug,
+        favoriteGenres: v.favoriteGenres,
         ...(avatarPhotoId ? { avatarPhotoId } : {}),
       });
       toast("Perfil actualizado");
@@ -98,6 +101,18 @@ export function ProfileForm({ initial, cities, email }: Props) {
             <option key={c.slug} value={c.slug}>{c.name}</option>
           ))}
         </Select>
+      </Field>
+      <Field label="Música que te gusta" hint="Para recomendarte eventos">
+        <div className="flex flex-wrap gap-2">
+          {GENRES.map((g) => {
+            const on = v.favoriteGenres.includes(g.slug);
+            return (
+              <Chip key={g.slug} active={on} onClick={() => setV({ ...v, favoriteGenres: on ? v.favoriteGenres.filter((x) => x !== g.slug) : [...v.favoriteGenres, g.slug].slice(0, 8) })}>
+                {g.name}
+              </Chip>
+            );
+          })}
+        </div>
       </Field>
       <Button type="submit" size="lg" className="w-full" loading={saving} disabled={uploading}>
         Guardar

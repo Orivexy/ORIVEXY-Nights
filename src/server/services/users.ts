@@ -157,6 +157,7 @@ export async function updateProfile(user: SessionUser, input: z.infer<typeof pro
   }
   if (input.displayName) data.displayName = input.displayName;
   if (input.bio !== undefined) data.bio = input.bio ?? null;
+  if (input.favoriteGenres !== undefined) data.favoriteGenres = [...new Set(input.favoriteGenres)];
   if (input.citySlug) {
     const city = await getCityBySlug(input.citySlug);
     if (!city) throw badRequest("Ciudad no válida");

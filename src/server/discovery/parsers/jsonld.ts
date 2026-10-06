@@ -146,6 +146,10 @@ export function jsonLdToEvents(nodes: Json[], pageUrl: string, defaultTz: string
         officialUrl: url,
         sourceUrl: url ?? pageUrl,
         organizerName: typeof organizer === "string" ? organizer : organizer ? str(organizer.name) : null,
+        performers: [o.performer]
+          .flat()
+          .map((p) => (typeof p === "string" ? p : p && typeof p === "object" ? str((p as Json).name) : null))
+          .filter((p): p is string => Boolean(p)),
         genres: [o.genre, (o as Json).keywords].flat().filter((g): g is string => typeof g === "string").flatMap((g) => g.split(",")),
         imageUrls: imageUrls(o.image).length ? imageUrls(o.image) : opts.fallbackImage ? [opts.fallbackImage] : [],
         cancelled: String(o.eventStatus ?? "").includes("EventCancelled"),

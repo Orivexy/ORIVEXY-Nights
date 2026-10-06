@@ -74,6 +74,7 @@ export const profileUpdateSchema = z.object({
   bio: optionalText(200).nullable(),
   citySlug: z.string().max(40).optional(),
   avatarPhotoId: cuid.nullable().optional(),
+  favoriteGenres: z.array(z.enum(GENRES.map((g) => g.slug) as [string, ...string[]])).max(8).optional(),
 });
 
 const dateString = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha no válida");
@@ -108,6 +109,10 @@ export const eventInputSchema = z
     refundPolicy: optionalText(1000).nullable(),
     coverPhotoId: cuid.optional().nullable(),
     photoIds: z.array(cuid).max(8).default([]),
+    /** Line-up: DJs, bands, performers (names only). */
+    artists: z.array(z.string().trim().min(1).max(60)).max(12).default([]),
+    /** Save without publishing: only the organizer sees it (preview). */
+    draft: z.boolean().optional(),
   })
   .refine((v) => v.isFree || (v.price != null && v.price > 0), {
     message: "Indica el precio o marca el evento como gratis",

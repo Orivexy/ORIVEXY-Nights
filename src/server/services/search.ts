@@ -23,6 +23,8 @@ export interface SearchResults {
   venues: VenueCardData[];
   users: Array<{ id: string; username: string; displayName: string; avatarKey: string | null; followerCount: number }>;
   places: Array<{ name: string; count: number; lat: number; lng: number }>;
+  /** DJs and performers by name, with their upcoming dates. */
+  artists: Array<{ id: string; slug: string; name: string; upcoming: number }>;
 }
 
 const TYPE_CATEGORIES: Record<string, string[]> = {
@@ -53,7 +55,7 @@ export async function globalSearch(
   const terms = intent.text.split(" ").filter((t) => t.length >= 2).slice(0, 5);
   const hasFilters = Boolean(intent.when || intent.near || intent.free || intent.genres.length || intent.types.length || intent.city);
   const base = { query, intent, city: { slug: city.slug, name: city.name }, needsLocation: intent.near && !opts.coords };
-  if (!terms.length && !hasFilters) return { ...base, events: [], venues: [], users: [], places: [] };
+  if (!terms.length && !hasFilters) return { ...base, events: [], venues: [], users: [], places: [], artists: [] };
 
   const near = intent.near && opts.coords ? { ...opts.coords, radiusKm: 3 } : null;
   const bbox = near ? boundingBox(near, near.radiusKm) : null;
@@ -82,7 +84,7 @@ export async function globalSearch(
   if (intent.genres.length) venueAnd.push({ genres: { some: { genre: { slug: { in: intent.genres } } } } });
   if (bbox) venueAnd.push({ lat: { gte: bbox.minLat, lte: bbox.maxLat }, lng: { gte: bbox.minLng, lte: bbox.maxLng } });
 
-  const [events, venues, users, neighborhoods] = await Promise.all([
+  const [events, venues, users, neighborhoods, artists] = await Promise.all([
     db.event.findMany({ where: { AND: eventAnd }, orderBy: { startsAt: "asc" }, select: eventCardSelect, take: near ? limit * 3 : limit }),
     wantVenues ? db.venue.findMany({ where: { AND: venueAnd }, orderBy: { followerCount: "desc" }, select: venueCardSelect, take: near ? limit * 3 : limit }) : [],
     terms.length && !hasFilters
@@ -101,6 +103,14 @@ export async function globalSearch(
           _avg: { lat: true, lng: true },
         })
       : [],
+    terms.length && !intent.when && !intent.free
+      ? db.artist.findMany({
+          where: { AND: terms.map((t) => ({ nameKey: { contains: t } })) },
+          orderBy: { followerCount: "desc" },
+          take: limit,
+          select: { id: true, slug: true, name: true, _count: { select: { events: { where: { event: { status: "PUBLISHED", ...notEndedWhere(now) } } } } } },
+        })
+      : [],
   ]);
 
   const places = neighborhoods
@@ -116,5 +126,6 @@ export async function globalSearch(
     venues: byDistance(venues.map(toVenueCard)),
     users: users.map(({ userId, ...u }) => ({ id: userId, ...u })),
     places,
+    artists: artists.map(({ _count, ...a }) => ({ ...a, upcoming: _count.events })),
   };
 }

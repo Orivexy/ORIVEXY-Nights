@@ -58,6 +58,7 @@ export default async function NewEventPage({ searchParams }: { searchParams: Pro
           price: "",
           minAge: "",
           ticketUrl: "",
+          artists: "",
           cover: null,
         }}
       />

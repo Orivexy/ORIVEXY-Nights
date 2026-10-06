@@ -1,4 +1,6 @@
+import { site } from "@/config/site";
 import type { Metadata } from "next";
+import { NotificationSettings } from "@/components/forms/notification-settings";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/server/auth/session";
 import { db } from "@/server/db";
@@ -17,7 +19,7 @@ export default async function SettingsPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/settings");
   const [profile, cities, blocked] = await Promise.all([
-    db.profile.findUniqueOrThrow({ where: { userId: user.id }, select: { bio: true, city: { select: { slug: true } }, user: { select: { passwordHash: true } } } }),
+    db.profile.findUniqueOrThrow({ where: { userId: user.id }, select: { bio: true, favoriteGenres: true, city: { select: { slug: true } }, user: { select: { passwordHash: true, mutedNotifications: true } } } }),
     listCities(),
     listBlocked(user.id),
   ]);
@@ -30,7 +32,7 @@ export default async function SettingsPage() {
       <ProfileForm
         email={user.email}
         cities={cities.map((c) => ({ slug: c.slug, name: c.name }))}
-        initial={{ username: user.username, displayName: user.displayName, bio: profile.bio ?? "", avatarKey: user.avatarKey, citySlug: profile.city?.slug ?? "barcelona" }}
+        initial={{ username: user.username, displayName: user.displayName, bio: profile.bio ?? "", avatarKey: user.avatarKey, citySlug: profile.city?.slug ?? site.defaultCitySlug, favoriteGenres: profile.favoriteGenres }}
       />
       <div className="my-10 h-px bg-line" />
       <Link href="/business" className="mb-10 flex items-center justify-between rounded-2xl border border-line bg-surface p-4 hover:bg-surface-2">
@@ -40,6 +42,10 @@ export default async function SettingsPage() {
         </span>
         <ArrowRight className="size-4 shrink-0 text-muted" />
       </Link>
+      <section className="mb-10 space-y-3">
+        <h2 className="text-[13px] font-bold tracking-wider text-muted uppercase">Notificaciones</h2>
+        <NotificationSettings initialMuted={profile.user.mutedNotifications} />
+      </section>
       <section className="mb-10 space-y-3">
         <h2 className="text-[13px] font-bold tracking-wider text-muted uppercase">Usuarios bloqueados</h2>
         <BlockedList initial={blocked} />

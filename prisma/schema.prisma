@@ -78,6 +78,8 @@ model User {
   suspendedAt   DateTime?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
+  /// Kinds of notification the user turned off in settings.
+  mutedNotifications NotificationType[] @default([])
 
   profile  Profile?
   accounts Account[]
@@ -94,6 +96,7 @@ model User {
   savedPosts     SavedPost[]
   attendances    EventAttendance[]
   venueFollows   VenueFollow[]
+  artistFollows  ArtistFollow[]
   managedVenues  Venue[]           @relation("VenueManagers")
   followers      Follow[]          @relation("Following")
   following      Follow[]          @relation("Follower")
@@ -123,6 +126,8 @@ model Profile {
   displayName    String
   bio            String?
   avatarKey      String?
+  /// Music genre slugs the user likes (feeds recommendations).
+  favoriteGenres String[] @default([])
   cityId         String?
   city           City?    @relation(fields: [cityId], references: [id])
   followerCount  Int      @default(0)
@@ -321,6 +326,8 @@ model VenueFollow {
 // ─── Events ──────────────────────────────────────────────────────────────────
 
 enum EventStatus {
+  /// Saved by its organizer, not sent to review yet (only they can see it).
+  DRAFT
   PENDING
   PUBLISHED
   REJECTED
@@ -460,6 +467,7 @@ model Event {
   promotions    Promotion[]
   sourceRecords SourceEventRecord[]
   changes       EventChange[]
+  artists       EventArtist[]
 
   @@index([cityId, status, startsAt])
   @@index([venueId, startsAt])
@@ -720,6 +728,7 @@ enum NotificationType {
   POST_TAG
   EVENT_REMINDER
   VENUE_NEW_EVENT
+  ARTIST_NEW_EVENT
   EVENT_APPROVED
   EVENT_REJECTED
   CONTENT_REMOVED
@@ -1521,4 +1530,73 @@ model AppSetting {
   value       Json
   updatedAt   DateTime @updatedAt
   updatedById String?
+}
+
+/// A DJ, band or performer. Created from event line-ups (organizers' forms and
+/// the performers that official sources publish), never invented.
+model Artist {
+  id            String         @id @default(cuid())
+  slug          String         @unique
+  name          String
+  /// Accent- and case-insensitive name, to match the same artist across sources.
+  nameKey       String         @unique
+  bio           String?
+  imageKey      String?
+  website       String?
+  instagram     String?
+  followerCount Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  events        EventArtist[]
+  followers     ArtistFollow[]
+}
+
+model EventArtist {
+  eventId  String
+  artistId String
+  position Int    @default(0)
+  event    Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  artist   Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, artistId])
+  @@index([artistId])
+}
+
+model ArtistFollow {
+  userId    String
+  artistId  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artist    Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, artistId])
+  @@index([artistId])
+}
+
+enum InteractionType {
+  EVENT_VIEW
+  VENUE_VIEW
+  ARTIST_VIEW
+  SEARCH
+  TICKET_CLICK
+  SHARE
+  SAVE
+}
+
+/// Internal product metrics. No IP, user agent or location is stored; the
+/// user id only for signed-in users (it feeds their recommendations).
+model Interaction {
+  id         String          @id @default(cuid())
+  type       InteractionType
+  userId     String?
+  eventId    String?
+  venueId    String?
+  artistId   String?
+  /// Search text (trimmed, max 80 chars) for SEARCH.
+  query      String?
+  createdAt  DateTime        @default(now())
+
+  @@index([type, createdAt])
+  @@index([eventId, type])
+  @@index([userId, createdAt])
 }

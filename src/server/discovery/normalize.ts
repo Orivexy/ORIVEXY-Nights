@@ -5,6 +5,7 @@
  * Principles: never invent data (unknown stays null), always resolve times
  * in the event's timezone, and keep titles readable.
  */
+import { cleanLineup } from "@/lib/artists";
 import { localToUtc } from "@/lib/time";
 import { cleanText, normalizeSearch } from "@/lib/text";
 import type { ExternalEvent, NormalizedEvent, SourceDateTime } from "./types";
@@ -192,6 +193,7 @@ export function normalizeEvent(ext: ExternalEvent, tz: string): NormalizeResult 
       officialUrl: safeUrl(ext.officialUrl),
       sourceUrl: safeUrl(ext.sourceUrl),
       organizerName: ext.organizerName?.trim().slice(0, 80) || null,
+      performers: cleanLineup(ext.performers ?? []),
       genres: detectGenres(ext.genres, parsed.title),
       category: detectCategory(parsed.title, ext.categoryHint, Boolean(venueName)),
       imageUrls: (ext.imageUrls ?? []).map(safeUrl).filter((u): u is string => Boolean(u)).slice(0, 3),

@@ -58,7 +58,7 @@ export interface EventCardData {
   isFeatured: boolean;
   promotionType: SponsorType;
   trust: "COMMUNITY" | "IMPORTED" | "OFFICIAL" | "VERIFIED";
-  status: "PENDING" | "PUBLISHED" | "REJECTED" | "CANCELLED" | "INACTIVE";
+  status: "DRAFT" | "PENDING" | "PUBLISHED" | "REJECTED" | "CANCELLED" | "INACTIVE";
 }
 
 export interface ViewerEventState {
@@ -98,6 +98,8 @@ export interface EventDetail extends EventCardData {
   attendeesPreview: UserMini[];
   viewer: ViewerEventState;
   canEdit: boolean;
+  /** Line-up in billing order. */
+  artists: Array<{ id: string; slug: string; name: string }>;
 }
 
 export interface VenueCardData {

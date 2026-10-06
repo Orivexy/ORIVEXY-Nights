@@ -4,6 +4,8 @@ import type { DiscoverySource, Prisma } from "@prisma/client";
 import { db } from "../db";
 import { processImage } from "../media/image";
 import { notifyVenueFollowers } from "../services/events";
+import { setEventArtists } from "../services/artists";
+import { artistKey } from "@/lib/artists";
 import { CATEGORIES, GENRES } from "@/config/taxonomy";
 import { SYSTEM_USERNAMES } from "@/config/system";
 import { buildSearchText, normalizeSearch, slugify } from "@/lib/text";
@@ -237,11 +239,12 @@ export async function createEventFromNormalized(n: NormalizedEvent, source: Sour
       importedAt: now,
       lastSyncedAt: now,
       lastVerifiedAt: now,
-      searchText: buildSearchText(n.title, location, n.address, city.name, n.organizerName, n.genres.join(" ")),
+      searchText: buildSearchText(n.title, location, n.address, city.name, n.organizerName, n.genres.join(" "), n.performers.join(" ")),
       genres: { create: genres.map((g) => ({ genreId: g.id })) },
     },
     select: { id: true, venueId: true },
   });
+  if (n.performers.length) await db.$transaction((tx) => setEventArtists(tx, event.id, n.performers));
   if (cover) await db.photo.update({ where: { id: cover.id }, data: { eventId: event.id } });
   await notifyVenueFollowers(event.id, event.venueId, organizerId);
   return event;
@@ -325,6 +328,13 @@ export async function applySourceUpdate(eventId: string, n: NormalizedEvent, sou
 
   const currentGenres = event.genres.map((g) => g.genre.slug).sort().join(",");
   const genresChanged = isPrimary && n.genres.length > 0 && [...n.genres].sort().join(",") !== currentGenres;
+  // The line-up follows the primary source when it publishes one.
+  if (isPrimary && n.performers.length) {
+    const current = await db.eventArtist.findMany({ where: { eventId }, orderBy: { position: "asc" }, select: { artist: { select: { nameKey: true } } } });
+    if (current.map((c) => c.artist.nameKey).join("|") !== n.performers.map(artistKey).join("|")) {
+      await db.$transaction((tx) => setEventArtists(tx, eventId, n.performers));
+    }
+  }
 
   if (!changes.length && !genresChanged) {
     if (imported) await db.event.update({ where: { id: eventId }, data: { lastSyncedAt: new Date() } });

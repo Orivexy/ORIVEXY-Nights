@@ -17,7 +17,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ slug
   if (!user) redirect(`/login?next=/events/${slug}/edit`);
   const e = await db.event.findUnique({
     where: { slug },
-    include: { category: true, genres: { include: { genre: true } }, city: true },
+    include: { category: true, genres: { include: { genre: true } }, city: true, artists: { orderBy: { position: "asc" }, include: { artist: { select: { name: true } } } } },
   });
   if (!e) notFound();
   if (e.organizerId !== user.id && !isStaff(user.role)) redirect(`/events/${slug}`);
@@ -41,6 +41,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ slug
         venues={venues}
         mapConfig={getMapConfig()}
         moderationNotice={false}
+        isDraft={e.status === "DRAFT"}
         initial={{
           title: e.title,
           description: e.description ?? "",
@@ -58,6 +59,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ slug
           price: e.priceMin ? String(e.priceMin / 100) : "",
           minAge: e.minAge ? String(e.minAge) : "",
           ticketUrl: e.ticketUrl ?? "",
+          artists: e.artists.map((a) => a.artist.name).join(", "),
           cover: cover && cover.id ? cover : null,
         }}
       />

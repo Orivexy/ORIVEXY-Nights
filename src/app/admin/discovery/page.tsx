@@ -1,3 +1,4 @@
+import { site } from "@/config/site";
 import Link from "next/link";
 import { discoveryOverview } from "@/server/services/admin-discovery";
 import { listCities } from "@/server/services/cities";
@@ -73,7 +74,7 @@ export default async function DiscoveryPage() {
                 { name: "key", label: "Clave interna", required: true, placeholder: "sala-x-agenda" },
                 { name: "type", label: "Tipo", type: "select", required: true, options: TYPE_OPTIONS },
                 { name: "url", label: "URL", type: "url", hint: "Obligatoria para iCal, web oficial y feed de partner" },
-                { name: "citySlug", label: "Ciudad", type: "select", required: true, options: cities.map((c) => ({ value: c.slug, label: c.name })), defaultValue: "barcelona" },
+                { name: "citySlug", label: "Ciudad", type: "select", required: true, options: cities.map((c) => ({ value: c.slug, label: c.name })), defaultValue: site.defaultCitySlug },
                 { name: "venueSlug", label: "Local propietario (opcional)", placeholder: "sala-x" },
                 { name: "trust", label: "Confianza", type: "select", options: [{ value: "IMPORTED", label: "IMPORTED (encontrado automáticamente)" }, { value: "OFFICIAL", label: "OFFICIAL (lo publica el propio club/promotor)" }], defaultValue: "IMPORTED" },
                 { name: "syncIntervalMin", label: "Intervalo (minutos)", type: "integer", hint: "Vacío = EVENT_SYNC_INTERVAL" },

@@ -40,6 +40,8 @@ async function blockedPairs(inputs: NotifyInput[]) {
 export async function notify(input: NotifyInput) {
   if (input.actorId && input.actorId === input.userId) return; // never notify yourself
   if (input.actorId && (await blockedPairs([input])).size) return; // nor across a block
+  const recipient = await db.user.findUnique({ where: { id: input.userId }, select: { mutedNotifications: true } });
+  if (recipient?.mutedNotifications.includes(input.type)) return; // turned off in settings
   try {
     const n = await db.notification.create({ data: input, select: { id: true, userId: true, type: true } });
     await Promise.allSettled(channels.map((c) => c.deliver(n)));
@@ -52,7 +54,13 @@ export async function notify(input: NotifyInput) {
 export async function notifyMany(inputs: NotifyInput[]) {
   const candidates = inputs.filter((i) => !(i.actorId && i.actorId === i.userId));
   const blocked = await blockedPairs(candidates);
-  const rows = candidates.filter((i) => !(i.actorId && blocked.has(`${i.actorId}:${i.userId}`)));
+  const allowed = candidates.filter((i) => !(i.actorId && blocked.has(`${i.actorId}:${i.userId}`)));
+  // Kinds each recipient turned off in settings.
+  const muted = allowed.length
+    ? await db.user.findMany({ where: { id: { in: [...new Set(allowed.map((i) => i.userId))] }, NOT: { mutedNotifications: { isEmpty: true } } }, select: { id: true, mutedNotifications: true } })
+    : [];
+  const mutedBy = new Map(muted.map((u) => [u.id, new Set(u.mutedNotifications)]));
+  const rows = allowed.filter((i) => !mutedBy.get(i.userId)?.has(i.type));
   if (rows.length) await db.notification.createMany({ data: rows, skipDuplicates: true });
 }
 

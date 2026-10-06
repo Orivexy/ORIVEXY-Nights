@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { cache } from "react";
+import { env } from "@/server/env";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -23,22 +25,32 @@ import { formatPrice } from "@/lib/money";
 import { DirectionsLink } from "@/components/map/directions-link";
 import { eventEnd, formatEventTime, formatLongDate, formatTime, isHappeningNow, timeAgo } from "@/lib/time";
 import { imageUrl } from "@/lib/media";
+import { eventJsonLd, jsonLd } from "@/lib/structured-data";
+import { PublishDraft } from "@/components/events/publish-draft";
 
 type Props = { params: Promise<{ slug: string }> };
 
+// One query per request for metadata and page.
+const loadEvent = cache((slug: string, viewer: Awaited<ReturnType<typeof getSessionUser>>) => getEventDetail(slug, viewer));
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const event = await getEventDetail(slug, null);
-  if (!event) return { title: "Evento" };
+  const event = await loadEvent(slug, null);
+  if (!event) return { title: "Evento", robots: { index: false } };
   const img = imageUrl(event.coverKey, "lg");
+  const title = event.title;
+  const description = `${formatLongDate(event.startsAt, event.timezone)} · ${event.venue?.name ?? event.locationName} · ${formatPrice(event.priceMin, event.priceMax, event.currency)}`;
   return {
-    title: event.title,
-    description: `${formatLongDate(event.startsAt, event.timezone)} · ${event.locationName} · ${formatPrice(event.priceMin, event.priceMax, event.currency)}`,
-    openGraph: img ? { images: [img] } : undefined,
+    title,
+    description,
+    alternates: { canonical: `/events/${event.slug}` },
+    openGraph: { type: "article", title, description, url: `/events/${event.slug}`, images: img ? [img] : undefined },
+    twitter: { card: img ? "summary_large_image" : "summary", title, description, images: img ? [img] : undefined },
   };
 }
 
-const STATUS_BANNER: Record<string, { tone: "warn" | "danger"; text: string }> = {
+const STATUS_BANNER: Record<string, { tone: "warn" | "danger" | "info"; text: string }> = {
+  DRAFT: { tone: "info", text: "Vista previa del borrador: solo tú lo ves. Publícalo cuando esté listo." },
   PENDING: { tone: "warn", text: "Pendiente de revisión: solo tú y el equipo de moderación podéis verlo." },
   REJECTED: { tone: "danger", text: "Este evento no ha sido aprobado. Edítalo para volver a enviarlo a revisión." },
   CANCELLED: { tone: "danger", text: "Evento cancelado por la organización." },
@@ -47,19 +59,27 @@ const STATUS_BANNER: Record<string, { tone: "warn" | "danger"; text: string }> =
 export default async function EventPage({ params }: Props) {
   const { slug } = await params;
   const user = await getSessionUser();
-  const event = await getEventDetail(slug, user);
+  const event = await loadEvent(slug, user);
   if (!event) notFound();
 
-  const [posts, more] = await Promise.all([
+  const [posts, more, similar] = await Promise.all([
     listPosts({ eventId: event.id, viewerId: user?.id, limit: 9 }),
     event.venue
       ? listEvents({ timezone: event.timezone, venueId: event.venue.id, excludeIds: [event.id], limit: 6 })
       : Promise.resolve({ items: [] }),
+    listEvents({
+      timezone: event.timezone,
+      ...(event.genres.length ? { genres: event.genres.map((g) => g.slug) } : { categories: [event.category.slug] }),
+      excludeIds: [event.id],
+      sort: "popular",
+      limit: 8,
+    }),
   ]);
   const live = isHappeningNow(event.startsAt, event.endsAt, undefined, event.timeUnknown);
   const ended = eventEnd(event.startsAt, event.endsAt, event.timeUnknown) < new Date();
   const tz = event.timezone;
   const banner = STATUS_BANNER[event.status];
+  const finished = ended && event.status === "PUBLISHED";
 
   return (
     <article className="mx-auto max-w-6xl md:px-6 md:pt-6">
@@ -100,8 +120,18 @@ export default async function EventPage({ params }: Props) {
         </div>
       </div>
 
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(eventJsonLd(event, env.APP_URL)) }} />
+
       {banner && (
-        <div className={`mx-4 mt-4 rounded-2xl px-4 py-3 text-sm md:mx-0 ${banner.tone === "warn" ? "bg-warn/10 text-warn" : "bg-danger/10 text-danger"}`}>{banner.text}</div>
+        <div className={`mx-4 mt-4 flex items-center gap-3 rounded-2xl px-4 py-3 text-sm md:mx-0 ${banner.tone === "warn" ? "bg-warn/10 text-warn" : banner.tone === "info" ? "bg-surface-2 text-fg" : "bg-danger/10 text-danger"}`}>
+          <span className="flex-1">{banner.text}</span>
+          {event.status === "DRAFT" && event.canEdit && <PublishDraft eventId={event.id} />}
+        </div>
+      )}
+      {finished && (
+        <div role="status" className="mx-4 mt-4 rounded-2xl bg-surface-2 px-4 py-3 text-sm font-semibold md:mx-0">
+          Evento finalizado · {formatLongDate(event.startsAt, tz)}
+        </div>
       )}
 
       <div className="grid gap-8 px-4 pt-6 md:grid-cols-[1fr_360px] md:gap-x-8 md:px-0">
@@ -129,7 +159,7 @@ export default async function EventPage({ params }: Props) {
               disabled={event.status !== "PUBLISHED" || ended}
               initial={{ ...event.viewer, interestedCount: event.interestedCount, goingCount: event.goingCount }}
             />
-            {event.ticketUrl ? (
+            {finished ? null : event.ticketUrl ? (
               <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer nofollow" className={buttonClass("primary", "lg", "mt-3 w-full")}>
                 <Ticket className="size-4" /> Comprar entradas{event.priceMin != null && ` · ${formatPrice(event.priceMin, event.priceMax, event.currency)}`}
               </a>
@@ -185,6 +215,21 @@ export default async function EventPage({ params }: Props) {
                 </Link>
               ))}
             </div>
+          )}
+
+          {event.artists.length > 0 && (
+            <section>
+              <h2 className="mb-2 text-[13px] font-bold tracking-wider text-muted uppercase">Line-up</h2>
+              <ul className="flex flex-wrap gap-2">
+                {event.artists.map((a) => (
+                  <li key={a.id}>
+                    <Link href={`/artists/${a.slug}`} className="inline-flex rounded-full border border-line-strong px-3.5 py-1.5 text-[14px] font-semibold hover:bg-surface-2">
+                      {a.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
 
           {event.description && (
@@ -258,6 +303,14 @@ export default async function EventPage({ params }: Props) {
           <SectionHeader title={`Más en ${event.venue.name}`} />
           <Rail itemClassName="w-[70vw] sm:w-[260px]">
             {more.items.map((e) => <EventCard key={e.id} event={e} />)}
+          </Rail>
+        </section>
+      )}
+      {similar.items.length > 0 && (
+        <section className="mt-10 px-4 md:px-0">
+          <SectionHeader title="Eventos similares" />
+          <Rail itemClassName="w-[70vw] sm:w-[260px]">
+            {similar.items.map((e) => <EventCard key={e.id} event={e} />)}
           </Rail>
         </section>
       )}

@@ -38,6 +38,8 @@ export interface ExternalEvent {
   officialUrl?: string | null;
   sourceUrl?: string | null;
   organizerName?: string | null;
+  /** Line-up as published by the source (schema.org performer). */
+  performers?: string[];
   genres?: string[];
   categoryHint?: string | null;
   imageUrls?: string[];
@@ -87,6 +89,7 @@ export interface NormalizedEvent {
   officialUrl: string | null;
   sourceUrl: string | null;
   organizerName: string | null;
+  performers: string[];
   genres: string[];
   category: string;
   imageUrls: string[];

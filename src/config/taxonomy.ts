@@ -38,3 +38,14 @@ export const REPORT_REASONS = [
   { value: "WRONG_INFO", label: "Información incorrecta" },
   { value: "OTHER", label: "Otro" },
 ] as const;
+
+/** Notifications a user can turn off (account and moderation notices always arrive). */
+export const MUTABLE_NOTIFICATIONS = [
+  { value: "VENUE_NEW_EVENT", label: "Nuevos eventos en locales que sigo" },
+  { value: "ARTIST_NEW_EVENT", label: "Nuevas fechas de artistas que sigo" },
+  { value: "EVENT_REMINDER", label: "Recordatorios de mis eventos" },
+  { value: "FOLLOW", label: "Nuevos seguidores" },
+  { value: "POST_LIKE", label: "Me gustas en mis publicaciones" },
+  { value: "POST_COMMENT", label: "Comentarios en mis publicaciones" },
+  { value: "POST_TAG", label: "Etiquetas en publicaciones" },
+] as const;

@@ -29,6 +29,8 @@ function describe(n: NotificationData): { icon: React.ReactNode; text: React.Rea
       return { icon: <CalendarClock className="size-3.5" />, text: <>Tu evento <b>{n.event?.title}</b> empieza en menos de 2 horas.</>, href: event };
     case "VENUE_NEW_EVENT":
       return { icon: <CalendarPlus className="size-3.5" />, text: <>Hay un nuevo evento en un local que sigues: <b>{n.event?.title}</b>.</>, href: event };
+    case "ARTIST_NEW_EVENT":
+      return { icon: <CalendarPlus className="size-3.5" />, text: <>Un artista que sigues tiene nueva fecha: <b>{n.event?.title}</b>.</>, href: event };
     case "EVENT_APPROVED":
       return { icon: <CheckCircle2 className="size-3.5" />, text: <>Tu evento <b>{n.event?.title}</b> ha sido aprobado y ya es público.</>, href: event };
     case "EVENT_REJECTED":

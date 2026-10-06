@@ -13,7 +13,7 @@ import { api, reviveDates } from "@/lib/api-client";
 import { imageUrl } from "@/lib/media";
 import type { EventCardData, FeedPost, Page, PhotoData } from "@/lib/types";
 
-type Tab = "posts" | "events" | "photos" | "saved";
+type Tab = "posts" | "events" | "photos" | "saved" | "following";
 
 export function ProfileTabs({ userId, isSelf, initialPosts }: { userId: string; isSelf: boolean; initialPosts: Page<FeedPost> }) {
   const [tab, setTab] = useState<Tab>("posts");
@@ -21,7 +21,7 @@ export function ProfileTabs({ userId, isSelf, initialPosts }: { userId: string; 
     { value: "posts", label: "Publicaciones" },
     { value: "events", label: "Eventos" },
     { value: "photos", label: "Fotos" },
-    ...(isSelf ? [{ value: "saved" as const, label: "Guardados" }] : []),
+    ...(isSelf ? [{ value: "saved" as const, label: "Guardados" }, { value: "following" as const, label: "Siguiendo" }] : []),
   ];
   return (
     <div>
@@ -31,6 +31,7 @@ export function ProfileTabs({ userId, isSelf, initialPosts }: { userId: string; 
         {tab === "events" && <Lazy<EventCardData> url={`/api/users/${userId}/events`} render={(p, url) => <EventList initial={p} endpoint={url} layout="rows" emptyTitle="Todavía no ha creado fiestas" emptyText=" " />} />}
         {tab === "photos" && <Lazy<PhotoData & { postId: string | null; venueSlug: string | null }> url={`/api/users/${userId}/photos`} render={(p, url) => <Photos initial={p} url={url} />} />}
         {tab === "saved" && <Saved />}
+        {tab === "following" && <Following />}
       </div>
     </div>
   );
@@ -89,6 +90,37 @@ function Saved() {
         <Lazy<EventCardData> key="e" url="/api/me/saved?type=events" render={(p, url) => <EventList initial={p} endpoint={url} layout="rows" emptyTitle="No has guardado eventos" emptyText="Guarda planes para tenerlos a mano." />} />
       ) : (
         <Lazy<FeedPost> key="p" url="/api/me/saved?type=posts" render={(p, url) => <Posts initial={p} url={url} empty="No has guardado publicaciones" />} />
+      )}
+    </div>
+  );
+}
+
+type Followed = { venues: Array<{ id: string; slug: string; name: string; neighborhood: string | null }>; artists: Array<{ id: string; slug: string; name: string; followerCount: number }> };
+
+/** Venues and artists the user follows. */
+function Following() {
+  const [data, setData] = useState<Followed | null>(null);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    api.get<Followed>("/api/me/following").then(setData).catch(() => setFailed(true));
+  }, []);
+  if (failed) return <EmptyState title="No se ha podido cargar">Inténtalo de nuevo en un momento.</EmptyState>;
+  if (!data) return <div className="flex justify-center py-10"><Loader2 className="size-5 animate-spin text-muted" /></div>;
+  if (!data.venues.length && !data.artists.length) return <EmptyState title="Aún no sigues nada">Sigue locales y artistas para enterarte de sus nuevos eventos.</EmptyState>;
+  const row = "flex items-center justify-between rounded-2xl px-3 py-3 hover:bg-surface";
+  return (
+    <div className="space-y-6">
+      {data.venues.length > 0 && (
+        <section>
+          <h3 className="mb-1 text-[13px] font-bold tracking-wider text-muted uppercase">Locales</h3>
+          <ul>{data.venues.map((v) => <li key={v.id}><Link href={`/venues/${v.slug}`} className={row}><span className="font-semibold">{v.name}</span><span className="text-sm text-muted">{v.neighborhood}</span></Link></li>)}</ul>
+        </section>
+      )}
+      {data.artists.length > 0 && (
+        <section>
+          <h3 className="mb-1 text-[13px] font-bold tracking-wider text-muted uppercase">Artistas</h3>
+          <ul>{data.artists.map((a) => <li key={a.id}><Link href={`/artists/${a.slug}`} className={row}><span className="font-semibold">{a.name}</span><span className="text-sm text-muted">{a.followerCount} seguidores</span></Link></li>)}</ul>
+        </section>
       )}
     </div>
   );

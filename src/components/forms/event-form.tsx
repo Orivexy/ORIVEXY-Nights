@@ -43,6 +43,8 @@ export interface EventFormValues {
   price: string;
   minAge: string;
   ticketUrl: string;
+  /** Line-up, comma separated. */
+  artists: string;
   cover: { id: string; key: string } | null;
 }
 
@@ -55,9 +57,11 @@ interface Props {
   mapConfig: MapConfig;
   initial: EventFormValues;
   moderationNotice: boolean;
+  /** Editing a draft: saving keeps it a draft. */
+  isDraft?: boolean;
 }
 
-export function EventForm({ mode, eventId, citySlug, cityName, venues, mapConfig, initial, moderationNotice }: Props) {
+export function EventForm({ mode, eventId, citySlug, cityName, venues, mapConfig, initial, moderationNotice, isDraft = false }: Props) {
   const [v, setV] = useState(initial);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
@@ -88,6 +92,8 @@ export function EventForm({ mode, eventId, citySlug, cityName, venues, mapConfig
     }
   };
 
+  // New events are saved as a draft and published from their preview page.
+  const asDraft = mode === "create" || isDraft;
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -112,10 +118,12 @@ export function EventForm({ mode, eventId, citySlug, cityName, venues, mapConfig
       ticketUrl: v.ticketUrl || null,
       coverPhotoId: v.cover?.id ?? null,
       photoIds: v.cover ? [v.cover.id] : [],
+      artists: v.artists.split(",").map((a) => a.trim()).filter(Boolean),
+      draft: asDraft,
     };
     try {
       const res = mode === "create" ? await api.post<{ slug: string; status: string }>("/api/events", body) : await api.patch<{ slug: string; status: string }>(`/api/events/${eventId}`, body);
-      toast(res.status === "PENDING" ? "Enviado a revisión. Te avisaremos cuando se publique." : mode === "create" ? "¡Evento publicado!" : "Cambios guardados");
+      toast(res.status === "DRAFT" ? "Borrador guardado: revisa la vista previa y publícalo" : res.status === "PENDING" ? "Enviado a revisión. Te avisaremos cuando se publique." : "Cambios guardados");
       router.push(`/events/${res.slug}`);
       router.refresh();
     } catch (err) {
@@ -273,6 +281,10 @@ export function EventForm({ mode, eventId, citySlug, cityName, venues, mapConfig
         </Field>
       </div>
 
+      <Field label="Artistas / DJs" htmlFor="artists" hint="Separados por comas, en orden de cartel" error={errors.artists}>
+        <Input id="artists" value={v.artists} onChange={(e) => set("artists", e.target.value)} maxLength={600} placeholder="Nombre del DJ, otra artista…" />
+      </Field>
+
       <Field label="Descripción" htmlFor="desc" error={errors.description}>
         <Textarea id="desc" value={v.description} onChange={(e) => set("description", e.target.value)} maxLength={2000} placeholder="Fiesta abierta en Gràcia. DJs locales, barras del barrio…" />
       </Field>
@@ -283,7 +295,7 @@ export function EventForm({ mode, eventId, citySlug, cityName, venues, mapConfig
 
       <div className="sticky bottom-20 z-10 md:bottom-4">
         <Button type="submit" size="lg" className="w-full shadow-2xl shadow-black" loading={saving} disabled={uploading}>
-          {mode === "create" ? "Publicar evento" : "Guardar cambios"}
+          {asDraft ? "Guardar y ver vista previa" : "Guardar cambios"}
         </Button>
       </div>
       {v.cover && (

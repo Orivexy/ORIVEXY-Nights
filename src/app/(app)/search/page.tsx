@@ -26,7 +26,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const followed = user && results?.users.length
     ? new Set((await db.follow.findMany({ where: { followerId: user.id, followingId: { in: results.users.map((u) => u.id) } }, select: { followingId: true } })).map((f) => f.followingId))
     : new Set<string>();
-  const empty = results && !results.events.length && !results.venues.length && !results.users.length && !results.places.length;
+  const empty = results && !results.events.length && !results.venues.length && !results.users.length && !results.places.length && !results.artists.length;
 
   return (
     <div className="mx-auto max-w-3xl space-y-8 px-4 pt-5 md:pt-10">
@@ -98,6 +98,22 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         <section>
           <SectionHeader title="Discotecas y locales" />
           <Rail itemClassName="w-[70vw] sm:w-[260px]">{results.venues.map((v) => <VenueCard key={v.id} venue={v} />)}</Rail>
+        </section>
+      ) : null}
+
+      {results?.artists.length ? (
+        <section>
+          <SectionHeader title="Artistas y DJs" />
+          <ul className="flex flex-wrap gap-2">
+            {results.artists.map((a) => (
+              <li key={a.id}>
+                <Link href={`/artists/${a.slug}`} className="inline-flex items-center gap-2 rounded-full border border-line-strong px-4 py-2 text-[14px] font-semibold hover:bg-surface-2">
+                  {a.name}
+                  {a.upcoming > 0 && <span className="text-[12px] font-normal text-muted">{a.upcoming} {a.upcoming === 1 ? "fecha" : "fechas"}</span>}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
       ) : null}
 
