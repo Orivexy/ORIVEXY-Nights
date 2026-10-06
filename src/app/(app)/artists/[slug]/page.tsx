@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ExternalLink, Music2 } from "lucide-react";
 import { getSessionUser } from "@/server/auth/session";
 import { getArtist } from "@/server/services/artists";
+import { recordInteraction } from "@/server/services/analytics";
 import { FollowButton } from "@/components/social/follow-button";
 import { EventCard } from "@/components/events/event-card";
 import { EmptyState, SectionHeader } from "@/components/ui/misc";
@@ -26,6 +27,7 @@ export default async function ArtistPage({ params }: Props) {
   const user = await getSessionUser();
   const artist = await load(slug, user?.id ?? null);
   if (!artist) notFound();
+  recordInteraction({ type: "ARTIST_VIEW", userId: user?.id, artistId: artist.id });
 
   return (
     <div className="mx-auto max-w-5xl px-4 pt-6 pb-12 md:px-6 md:pt-10">

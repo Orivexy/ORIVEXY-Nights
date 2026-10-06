@@ -27,6 +27,8 @@ import { eventEnd, formatEventTime, formatLongDate, formatTime, isHappeningNow, 
 import { imageUrl } from "@/lib/media";
 import { eventJsonLd, jsonLd } from "@/lib/structured-data";
 import { PublishDraft } from "@/components/events/publish-draft";
+import { TicketLink } from "@/components/events/ticket-link";
+import { recordInteraction } from "@/server/services/analytics";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -61,6 +63,7 @@ export default async function EventPage({ params }: Props) {
   const user = await getSessionUser();
   const event = await loadEvent(slug, user);
   if (!event) notFound();
+  if (event.status === "PUBLISHED") recordInteraction({ type: "EVENT_VIEW", userId: user?.id, eventId: event.id });
 
   const [posts, more, similar] = await Promise.all([
     listPosts({ eventId: event.id, viewerId: user?.id, limit: 9 }),
@@ -160,14 +163,14 @@ export default async function EventPage({ params }: Props) {
               initial={{ ...event.viewer, interestedCount: event.interestedCount, goingCount: event.goingCount }}
             />
             {finished ? null : event.ticketUrl ? (
-              <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer nofollow" className={buttonClass("primary", "lg", "mt-3 w-full")}>
+              <TicketLink eventId={event.id} href={event.ticketUrl} className={buttonClass("primary", "lg", "mt-3 w-full")}>
                 <Ticket className="size-4" /> Comprar entradas{event.priceMin != null && ` · ${formatPrice(event.priceMin, event.priceMax, event.currency)}`}
-              </a>
+              </TicketLink>
             ) : (
               event.officialUrl && (
-                <a href={event.officialUrl} target="_blank" rel="noopener noreferrer nofollow" className={buttonClass("outline", "md", "mt-3 w-full")}>
+                <TicketLink eventId={event.id} href={event.officialUrl} className={buttonClass("outline", "md", "mt-3 w-full")}>
                   <Ticket className="size-4" /> Entradas e info oficial
-                </a>
+                </TicketLink>
               )
             )}
             {event.attendeesPreview.length > 0 && (

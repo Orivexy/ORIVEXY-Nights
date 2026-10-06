@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { recordInteraction } from "@/server/services/analytics";
 import Link from "next/link";
 import { MapPin, SearchX } from "lucide-react";
 import { SearchBox } from "@/components/forms/search-box";
@@ -22,6 +23,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const [city, user] = await Promise.all([getCurrentCity(), getSessionUser()]);
   const coords = lat && lng && Number.isFinite(Number(lat)) && Number.isFinite(Number(lng)) ? { lat: Number(lat), lng: Number(lng) } : null;
   const results = q.trim() ? await globalSearch(q, city, { limit: 8, coords }) : null;
+  if (results) recordInteraction({ type: "SEARCH", userId: user?.id, query: results.query });
   const chips = results ? intentChips(results) : [];
   const followed = user && results?.users.length
     ? new Set((await db.follow.findMany({ where: { followerId: user.id, followingId: { in: results.users.map((u) => u.id) } }, select: { followingId: true } })).map((f) => f.followingId))

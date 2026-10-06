@@ -14,7 +14,7 @@ export function VenueActions({ venueId, slug, name, following, followerCount }: 
   return (
     <div className="flex items-center gap-2">
       <FollowButton kind="venue" targetId={venueId} initial={following} onChange={(_, c) => c != null && setCount(c)} className="flex-1 md:flex-none" />
-      <ShareButton url={`/venues/${slug}`} title={name} iconOnly className="size-10 rounded-full border border-line-strong hover:bg-surface-2" />
+      <ShareButton url={`/venues/${slug}`} title={name} target={{ venueId }} iconOnly className="size-10 rounded-full border border-line-strong hover:bg-surface-2" />
       <MoreMenu items={[{ label: "Reportar local", icon: <Flag className="size-4" />, onSelect: () => report.open("VENUE", venueId) }]} className="border border-line-strong" />
       <span className="ml-1 text-[13px] text-muted">
         <b className="text-fg">{compactNumber(count)}</b> seguidores

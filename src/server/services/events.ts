@@ -1,4 +1,5 @@
 import "server-only";
+import { recordInteraction } from "./analytics";
 import { setEventArtists } from "./artists";
 import type { EventStatus, Prisma, VenueType } from "@prisma/client";
 import { randomBytes } from "node:crypto";
@@ -486,6 +487,7 @@ export async function toggleSaveEvent(userId: string, eventId: string, saved: bo
       create: { userId, eventId },
       update: {},
     });
+    recordInteraction({ type: "SAVE", userId, eventId });
   } else {
     await db.savedEvent.deleteMany({ where: { userId, eventId } });
   }

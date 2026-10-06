@@ -76,7 +76,11 @@ export async function deleteAccount(userId: string, confirm: string, password: s
     db.photo.findMany({ where: { uploaderId: userId }, select: { key: true } }),
     db.video.findMany({ where: { uploaderId: userId }, select: { key: true, posterKey: true } }),
   ]);
-  await db.user.delete({ where: { id: userId } });
+  await db.$transaction([
+    // Metrics stay as anonymous counts.
+    db.interaction.updateMany({ where: { userId }, data: { userId: null } }),
+    db.user.delete({ where: { id: userId } }),
+  ]);
   await Promise.allSettled([
     ...photos.map((p) => deleteImage(p.key)),
     ...videos.map(async (v) => {

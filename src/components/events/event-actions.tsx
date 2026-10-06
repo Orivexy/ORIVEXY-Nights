@@ -75,7 +75,7 @@ export function EventActions({ eventId, slug, title, initial, disabled }: Props)
         <button onClick={toggleSave} aria-pressed={state.saved} className={cn("pressable flex h-11 flex-1 items-center justify-center gap-2 rounded-full border text-sm font-semibold", state.saved ? "border-volt/50 text-volt" : "border-line-strong hover:bg-surface-2")}>
           <Bookmark className="size-[18px]" fill={state.saved ? "currentColor" : "none"} /> {state.saved ? "Guardado" : "Guardar"}
         </button>
-        <ShareButton url={`/events/${slug}`} title={title} className="h-11 flex-1 rounded-full border border-line-strong text-sm hover:bg-surface-2" />
+        <ShareButton url={`/events/${slug}`} title={title} target={{ eventId }} className="h-11 flex-1 rounded-full border border-line-strong text-sm hover:bg-surface-2" />
       </div>
       <p className="text-center text-[13px] text-muted">
         <span className="font-bold text-fg">{state.goingCount}</span> van · <span className="font-bold text-fg">{state.interestedCount}</span> interesados

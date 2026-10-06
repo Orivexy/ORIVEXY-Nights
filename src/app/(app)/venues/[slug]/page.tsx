@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { env } from "@/server/env";
 import { jsonLd, venueJsonLd } from "@/lib/structured-data";
+import { recordInteraction } from "@/server/services/analytics";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AtSign, Clock, ExternalLink, MapPin, Music2, ShieldCheck, Wallet } from "lucide-react";
@@ -53,6 +54,7 @@ export default async function VenuePage({ params }: Props) {
   const user = await getSessionUser();
   const venue = await getVenueDetail(slug, user);
   if (!venue) notFound();
+  recordInteraction({ type: "VENUE_VIEW", userId: user?.id, venueId: venue.id });
 
   const [events, reviews, gallery, posts] = await Promise.all([
     listEvents({ timezone: venue.timezone, venueId: venue.id, limit: 8 }),
