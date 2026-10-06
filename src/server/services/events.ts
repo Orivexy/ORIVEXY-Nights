@@ -549,6 +549,14 @@ export async function sendEventReminders(now = new Date()) {
   return { events: soon.length, notifications: sent };
 }
 
+/** Hides a published event (kept for history) or shows it again; no notification. */
+export async function setEventHidden(eventId: string, hidden: boolean) {
+  const e = await db.event.findUnique({ where: { id: eventId }, select: { status: true } });
+  if (!e) throw notFound("Evento no encontrado");
+  if (hidden ? e.status !== "PUBLISHED" : e.status !== "INACTIVE") throw badRequest(hidden ? "Solo se pueden ocultar eventos publicados" : "El evento no está oculto");
+  await db.event.update({ where: { id: eventId }, data: { status: hidden ? "INACTIVE" : "PUBLISHED" } });
+}
+
 export async function moderateEvent(eventId: string, decision: "approve" | "reject") {
   const event = await db.event.update({
     where: { id: eventId },

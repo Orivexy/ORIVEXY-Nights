@@ -51,6 +51,11 @@ export default async function AdminEventsPage({ searchParams }: { searchParams: 
                   <AdminAction url={`/api/admin/events/${e.id}`} body={{ decision: "reject" }} tone="danger" success="Evento rechazado">Rechazar</AdminAction>
                 </>
               )}
+              {(e.status === "PENDING" || e.status === "PUBLISHED") && e.source === "USER" && (
+                <AdminAction url={`/api/admin/events/${e.id}`} body={{ decision: "spam" }} tone="danger" confirm="¿Marcar como spam? Se rechaza el evento y se suspende la cuenta si es de la comunidad." success="Marcado como spam">Spam</AdminAction>
+              )}
+              {e.status === "PUBLISHED" && <AdminAction url={`/api/admin/events/${e.id}`} body={{ hidden: true }} success="Evento oculto">Ocultar</AdminAction>}
+              {e.status === "INACTIVE" && <AdminAction url={`/api/admin/events/${e.id}`} body={{ hidden: false }} success="Evento visible de nuevo">Mostrar</AdminAction>}
               {e.status === "PUBLISHED" && (
                 <AdminAction url={`/api/admin/events/${e.id}`} body={{ featured: !e.isFeatured }} success={e.isFeatured ? "Ya no está destacado" : "Evento destacado"}>
                   {e.isFeatured ? "Quitar destacado" : "Destacar"}

@@ -13,7 +13,7 @@ test("complete user journey", async ({ page, browser }) => {
 
   // 1. Register
   await page.goto("/register");
-  await page.getByLabel("Nombre").fill("E2E Tester");
+  await page.getByLabel("Nombre", { exact: true }).fill("E2E Tester");
   await page.getByLabel("Usuario").fill(name);
   await page.getByLabel("Email").fill(`${name}@example.com`);
   await page.getByLabel("Contraseña", { exact: true }).fill(PASSWORD);
@@ -118,9 +118,14 @@ test("complete user journey", async ({ page, browser }) => {
   await page.waitForURL(/\/events\/fiesta-/);
   await expect(page.getByText(/Vista previa del borrador/)).toBeVisible();
   await expect(page.getByRole("link", { name: `DJ ${name}` })).toBeVisible();
-  // Drafts are private: a visitor gets a 404.
+  // Drafts are private: visitors get the not-found page, never the draft (API: 404).
   const anon = await browser.newContext();
-  expect((await anon.request.get(page.url())).status()).toBe(404);
+  const draftHtml = await (await anon.request.get(page.url())).text();
+  expect(draftHtml).not.toContain(`DJ ${name}`);
+  const draftSlug = new URL(page.url()).pathname.split("/").pop()!;
+  const draftId = ((await (await page.request.get(`/api/events?q=${encodeURIComponent(name)}`)).json()) as { items: Array<{ id: string }> }).items[0]?.id;
+  expect(draftId).toBeUndefined(); // drafts are not listed
+  expect(draftSlug).toMatch(/^fiesta-/);
   await anon.close();
   await page.getByRole("button", { name: "Publicar", exact: true }).click();
   await expect(page.getByText(/Pendiente de revisión/)).toBeVisible();

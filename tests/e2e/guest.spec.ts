@@ -6,7 +6,7 @@ test.describe("guest browsing", () => {
     await page.goto("/");
     await expect(page.getByRole("heading", { name: /¿A qué discoteca vas\?/ })).toBeVisible();
     await expect(page.getByRole("application", { name: "Mapa" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Próximos eventos" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Próximamente" })).toBeVisible();
     await expect(page.getByText(TONIGHT.title).first()).toBeVisible();
     await expect(page.getByText(/Esta noche · Barcelona/i)).toBeVisible();
   });

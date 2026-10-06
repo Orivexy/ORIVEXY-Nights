@@ -7,6 +7,7 @@ import { buildSearchText, normalizeSearch } from "@/lib/text";
 import type { z } from "zod";
 import type { venueAdminUpdateSchema } from "@/lib/validators";
 import type { AppRole } from "@/lib/roles";
+import { setUserSuspended } from "./reports";
 
 /** Read models and actions for the admin panel (role-checked at the route). */
 
@@ -137,4 +138,12 @@ export async function setUserRole(userId: string, role: AppRole) {
     throw badRequest("Debe quedar al menos un administrador");
   }
   await db.user.update({ where: { id: userId }, data: { role } });
+}
+
+/** Spam: the event is rejected and, when it comes from a regular community account, that account is suspended. */
+export async function markEventSpam(eventId: string, actorRole: AppRole) {
+  const e = await db.event.findUnique({ where: { id: eventId }, select: { organizerId: true, source: true, organizer: { select: { role: true } } } });
+  if (!e) throw notFound("Evento no encontrado");
+  await db.event.update({ where: { id: eventId }, data: { status: "REJECTED", isFeatured: false } });
+  if (e.source === "USER" && e.organizer.role === "USER") await setUserSuspended(e.organizerId, true, actorRole);
 }

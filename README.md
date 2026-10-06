@@ -49,4 +49,21 @@ Descárgala, ábrela y listo. Gratis.
 - **Linux**: clic derecho sobre el archivo → *Propiedades* → *Permitir ejecutar*, y doble clic.
 - **Móvil**: con la app abierta en el ordenador, menú *(Nombre en proceso)* → *Abrir en el móvil* y escanea el código.
 
+## Para desarrolladores
+
+**Stack**: Next.js 16 (App Router, React 19) · TypeScript · PostgreSQL + Prisma 6 · Tailwind 4 · MapLibre GL · Vitest + Playwright · Electron (apps de escritorio con PostgreSQL embebido).
+
+**Arquitectura**: `City → Venues → Events` (ciudades en `src/config/cities.ts`, sin Barcelona fija en el código) · API REST en `src/app/api` con validación zod, sesión en servidor, roles (`USER`, `ORGANIZER`, `VENUE`, `MODERATOR`, `ADMIN`) y rate limit · servicios en `src/server/services` · fuentes de eventos `fuente → normalizar → validar → deduplicar → base de datos` en `src/server/discovery` (cada evento guarda su origen) · artistas, borradores y moderación, recomendaciones explicables, métricas internas sin datos personales.
+
+```bash
+cp .env.example .env       # DATABASE_URL y, si quieres, ADMIN_EMAIL/ADMIN_PASSWORD
+npm install
+npm run db:deploy && npm run db:seed
+npm run dev                # http://localhost:3000
+npm run typecheck && npm run lint && npm test   # comprobaciones
+npm run build && npm run test:e2e               # e2e con base de datos aislada
+```
+
+Guías: [desarrollo](docs/development.md) · [despliegue](docs/deployment.md) · [fuentes de eventos](docs/event-discovery.md) · [mapa y locales](docs/places-and-map.md) · [escritorio](docs/desktop.md) · [estado del proyecto](PROJECT_STATUS.md).
+
 <div align="center"><sub>Información y fotos de la web oficial de cada local, ubicaciones © colaboradores de OpenStreetMap, agenda de Xceed y ortofoto del ICGC.</sub></div>
