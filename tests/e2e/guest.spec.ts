@@ -68,3 +68,23 @@ test.describe("guest browsing", () => {
     expect(res.status()).toBe(503);
   });
 });
+
+test.describe("search engines", () => {
+  test("sitemap lists public pages and robots keeps private ones out", async ({ request }) => {
+    const sitemap = await (await request.get("/sitemap.xml")).text();
+    expect(sitemap).toContain(`/venues/${VENUE.slug}`);
+    expect(sitemap).toContain(`/events/${TONIGHT.slug}`);
+    const robots = await (await request.get("/robots.txt")).text();
+    expect(robots).toMatch(/Disallow: \/admin/);
+    expect(robots).toMatch(/Sitemap: .*\/sitemap\.xml/);
+  });
+
+  test("event pages carry schema.org data and share metadata", async ({ page }) => {
+    await page.goto(`/events/${TONIGHT.slug}`);
+    const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').first().textContent()) ?? "{}");
+    expect(ld["@type"]).toBe("Event");
+    expect(ld.name).toBe(TONIGHT.title);
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", new RegExp(TONIGHT.title));
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", new RegExp(`/events/${TONIGHT.slug}$`));
+  });
+});

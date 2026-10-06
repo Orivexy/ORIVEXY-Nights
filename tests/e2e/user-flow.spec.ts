@@ -109,12 +109,20 @@ test("complete user journey", async ({ page, browser }) => {
   await page.goto("/settings");
   await expect(page.getByText(`@${other.name}`).first()).toBeVisible();
 
-  // 15. Create an event (new accounts go to review)
+  // 15. Create an event: saved as a draft, previewed, then sent (new accounts go to review)
   await page.goto("/events/new");
   await page.getByLabel("Título").fill(`Fiesta ${name}`);
   await page.getByLabel("Nombre del lugar").fill("Plaça de la Virreina");
-  await page.getByRole("button", { name: "Publicar evento" }).click();
+  await page.getByLabel("Artistas / DJs").fill(`DJ ${name}, Otra Artista`);
+  await page.getByRole("button", { name: "Guardar y ver vista previa" }).click();
   await page.waitForURL(/\/events\/fiesta-/);
+  await expect(page.getByText(/Vista previa del borrador/)).toBeVisible();
+  await expect(page.getByRole("link", { name: `DJ ${name}` })).toBeVisible();
+  // Drafts are private: a visitor gets a 404.
+  const anon = await browser.newContext();
+  expect((await anon.request.get(page.url())).status()).toBe(404);
+  await anon.close();
+  await page.getByRole("button", { name: "Publicar", exact: true }).click();
   await expect(page.getByText(/Pendiente de revisión/)).toBeVisible();
 
   // 16. Change password, then log in with the new one
